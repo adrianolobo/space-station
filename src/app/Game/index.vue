@@ -4,13 +4,13 @@
 </template>
 
 <script>
-import Phaser from 'phaser/dist/phaser.min';
+import Phaser from 'phaser/dist/phaser';
 
 let graphics;
 let path;
 let linePath = [];
-let follower;
 let isDrawing = false;
+let ship;
 
 export default {
   mounted() {
@@ -19,16 +19,25 @@ export default {
       type: Phaser.AUTO,
       width: 800,
       height: 600,
+      physics: {
+        default: 'matter',
+        matter: {
+          gravity: {
+            x: 0,
+            y: 0,
+          },
+        },
+      },
       scene: {
         preload() {
           this.load.image('cargo-ship', '/static/img/cargo-ship.png');
         },
         create() {
           graphics = this.add.graphics();
+          ship = this.matter.add.sprite(400, 300, 'cargo-ship');
+          console.log(ship);
           // eslint-disable-next-line
           this.input.on('pointerdown', (pointer) => {
-            console.log('pointerdown');
-            console.log(pointer);
             linePath.push({
               x: pointer.position.x,
               y: pointer.position.y,
@@ -36,8 +45,6 @@ export default {
             isDrawing = true;
           });
           this.input.on('pointermove', (pointer) => {
-            console.log('pointermove');
-            console.log(pointer);
             if (isDrawing) {
               linePath.push({
                 x: pointer.position.x,
@@ -46,14 +53,11 @@ export default {
             }
           });
           this.input.on('pointerup', (pointer) => {
-            console.log('pointerup');
-            console.log(pointer);
             linePath.push({
               x: pointer.position.x,
               y: pointer.position.y,
             });
             isDrawing = false;
-            console.log(linePath);
             linePath = [];
           });
         },
@@ -66,28 +70,13 @@ export default {
               path.lineTo(linePath[i].x, linePath[i].y);
             }
           }
-          if (path && !follower && !isDrawing) {
-            follower = this.add.follower(path, 0, 0, 'cargo-ship');
-            follower.start({
-              positionOnPath: true,
-              duration: 3000,
-              yoyo: true,
-              repeat: -1,
-              rotateToPath: true,
-              verticalAdjust: true,
-            });
-            console.log('**************');
-            console.log('**************');
-            console.log('**************');
-          }
           if (path) {
             path.draw(graphics);
           }
         },
       },
     };
-    const game = new Phaser.Game(config);
-    console.log(game);
+    this.game = new Phaser.Game(config);
   },
 };
 </script>
