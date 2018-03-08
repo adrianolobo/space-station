@@ -94,7 +94,18 @@ export default {
           if (((path || {}).curves || []).length > 0) {
             const point = path.curves[0].p0;
             const angle = Math.atan2(point.y - ship.y, point.x - ship.x);
-            ship.setAngle((angle * 180) / Math.PI);
+            let angleToTurn = 0;
+            if (ship.body.angle > (angle + 0.02)) {
+              angleToTurn = ship.body.angle - 0.07;
+              console.log('MAIOR');
+            } else if (ship.body.angle < (angle - 0.02)) {
+              angleToTurn = ship.body.angle + 0.07;
+              console.log('MENOR');
+            } else {
+              console.log('RECEBE ANGULO');
+              angleToTurn = angle;
+            }
+            ship.setAngle((angleToTurn * 180) / Math.PI);
             ship.setVelocityX(Math.cos(angle));
             ship.setVelocityY(Math.sin(angle));
             const distance = Phaser.Math.Distance.Between(ship.x, ship.y, point.x, point.y);
