@@ -35,8 +35,8 @@ export default {
         create() {
           graphics = this.add.graphics();
           ship = this.matter.add.sprite(400, 300, 'cargo-ship');
+
           console.log(ship);
-          // eslint-disable-next-line
           this.input.on('pointerdown', (pointer) => {
             linePath.push({
               x: pointer.position.x,
@@ -46,10 +46,28 @@ export default {
           });
           this.input.on('pointermove', (pointer) => {
             if (isDrawing) {
-              linePath.push({
-                x: pointer.position.x,
-                y: pointer.position.y,
-              });
+              const lastLine = linePath[linePath.length - 1];
+              const pointerPos = pointer.position;
+              const distance = Phaser.Math.Distance.Between(
+                lastLine.x, lastLine.y,
+                pointerPos.x, pointerPos.y,
+              );
+              console.log(distance);
+              const MAX_DISTANCE = 10;
+              if (distance > MAX_DISTANCE) {
+                const amount = Math.floor(distance / MAX_DISTANCE);
+                console.log(amount);
+                for (let i = 0; i < amount; i += 1) {
+                  const deltaY = pointerPos.y - lastLine.y;
+                  const deltaX = pointerPos.x - lastLine.x;
+                  const angle = Math.atan2(deltaY, deltaX);
+                  linePath.push({
+                    x: lastLine.x + (Math.cos(angle) * MAX_DISTANCE * (i + 1)),
+                    y: lastLine.y + (Math.sin(angle) * MAX_DISTANCE * (i + 1)),
+                  });
+                }
+                console.log('AEEEEE');
+              }
             }
           });
           this.input.on('pointerup', (pointer) => {
@@ -72,6 +90,17 @@ export default {
           }
           if (path) {
             path.draw(graphics);
+          }
+          if (((path || {}).curves || []).length > 0) {
+            const point = path.curves[0].p0;
+            const angle = Math.atan2(point.y - ship.y, point.x - ship.x);
+            ship.setAngle((angle * 180) / Math.PI);
+            ship.setVelocityX(Math.cos(angle));
+            ship.setVelocityY(Math.sin(angle));
+            const distance = Phaser.Math.Distance.Between(ship.x, ship.y, point.x, point.y);
+            if (distance < 1) {
+              path.curves.shift();
+            }
           }
         },
       },
