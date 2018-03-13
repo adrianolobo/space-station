@@ -1,14 +1,25 @@
 import Phaser from 'phaser/dist/phaser';
 
+const CARGO_SHIP_STATES = {
+  MOVING: 'moving',
+  TRACTOR: 'tractor',
+  UNLOADING: 'unloading',
+  UNLOADED: 'unloaded',
+};
+
 export default class CargoShip {
   constructor(scene) {
     this.scene = scene;
 
+    this.state = CARGO_SHIP_STATES.MOVING;
+    this.unloadTime = 5000;
+
     this.path = null;
-    this.sprite = this.scene.matter.add.sprite(400, 300, 'cargo-ship');
-    this.sprite.name = 'CargoShip';
-    this.sprite.setInteractive();
-    this.sprite.setFrictionAir(0);
+    this.cargoShip = this.scene.matter.add.sprite(600, 300, 'cargo-ship');
+    this.cargoShip.__self = this;
+    this.cargoShip.name = 'CargoShip';
+    this.cargoShip.setInteractive();
+    this.cargoShip.setFrictionAir(0);
 
     this.graphics = this.scene.add.graphics();
   }
@@ -25,23 +36,25 @@ export default class CargoShip {
       return;
     }
     const point = this.path.curves[0].p0;
-    const spritePos = { x: this.sprite.x, y: this.sprite.y };
+    const spritePos = { x: this.cargoShip.x, y: this.cargoShip.y };
     const angle = Phaser.Math.Angle.BetweenPoints(spritePos, point);
-    this.sprite.setVelocityX(Math.cos(angle));
-    this.sprite.setVelocityY(Math.sin(angle));
+    this.cargoShip.setVelocityX(Math.cos(angle));
+    this.cargoShip.setVelocityY(Math.sin(angle));
     const distance = Phaser.Math.Distance.Between(point.x, point.y, spritePos.x, spritePos.y);
     if (distance < 1) {
       this.path.curves.shift();
     }
+    /*
     let angleToTurn = 0;
-    if (this.sprite.body.angle > (angle + 0.02)) {
-      angleToTurn = this.sprite.body.angle - 0.07;
-    } else if (this.sprite.body.angle < (angle - 0.02)) {
-      angleToTurn = this.sprite.body.angle + 0.07;
+    if (this.cargoShip.body.angle > (angle + 0.02)) {
+      angleToTurn = this.cargoShip.body.angle - 0.07;
+    } else if (this.cargoShip.body.angle < (angle - 0.02)) {
+      angleToTurn = this.cargoShip.body.angle + 0.07;
     } else {
       angleToTurn = angle;
     }
-    this.sprite.setAngle(Phaser.Math.RadToDeg(angleToTurn));
+    */
+    this.cargoShip.setAngle(Phaser.Math.RadToDeg(angle));
   }
   beginPath(position) {
     this.path = new Phaser.Curves.Path(position.x, position.y);
@@ -73,6 +86,25 @@ export default class CargoShip {
     this.path.lineTo(position.x, position.y);
   }
   checkSprite(sprite) {
-    return this.sprite === sprite;
+    return this.cargoShip === sprite;
+  }
+  tractorBeam(enterCoords, leaveCoords) {
+    if (this.state !== CARGO_SHIP_STATES.MOVING) {
+      return;
+    }
+    this.state = CARGO_SHIP_STATES.TRACTOR;
+    this.beginPath({ x: this.cargoShip.x, y: this.cargoShip.y });
+    enterCoords.forEach((coord) => {
+      this.movePath(coord);
+    });
+    setTimeout(() => {
+      this.beginPath({ x: this.cargoShip.x, y: this.cargoShip.y });
+      leaveCoords.forEach((coord) => {
+        this.movePath(coord);
+      });
+    }, this.unloadTime);
+  }
+  collided() {
+    return this;
   }
 }

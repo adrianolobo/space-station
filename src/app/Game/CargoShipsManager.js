@@ -11,16 +11,6 @@ export default class CargoShipsManager {
   }
   create() {
     this.ships.push(new CargoShip(this.scene));
-    this.ships.push(new CargoShip(this.scene));
-    this.ships.push(new CargoShip(this.scene));
-    this.ships.push(new CargoShip(this.scene));
-    this.ships.push(new CargoShip(this.scene));
-    this.ships.push(new CargoShip(this.scene));
-    this.ships.push(new CargoShip(this.scene));
-    this.ships.push(new CargoShip(this.scene));
-    this.ships.push(new CargoShip(this.scene));
-    this.ships.push(new CargoShip(this.scene));
-    this.ships.push(new CargoShip(this.scene));
     this.manageInputs();
   }
   update() {
@@ -31,7 +21,7 @@ export default class CargoShipsManager {
   manageInputs() {
     this.scene.input.on('pointerdown', (pointer, gameObjects) => {
       if ((gameObjects[0] || {}).name === 'CargoShip') {
-        const ship = this.findShip(gameObjects[0]);
+        const ship = gameObjects[0].__self;
         if (ship) {
           this.activeShip = ship;
           ship.beginPath(pointer.position);
@@ -49,8 +39,5 @@ export default class CargoShipsManager {
         this.activeShip = null;
       }
     });
-  }
-  findShip(shipSprite) {
-    return this.ships.find(ship => ship.checkSprite(shipSprite));
   }
 }

@@ -6,6 +6,8 @@
 <script>
 import Phaser from 'phaser/dist/phaser';
 import CargoShipsManager from './CargoShipsManager';
+import SpaceStationManager from './SpaceStationManager';
+import CollisionManager from './CollisionManager';
 
 export default {
   mounted() {
@@ -21,18 +23,26 @@ export default {
             x: 0,
             y: 0,
           },
+          debug: true,
         },
       },
       scene: {
         preload() {
           this.CargoShipsManager = new CargoShipsManager(this);
+          this.SpaceStationManager = new SpaceStationManager(this);
+          this.CollisionManager = new CollisionManager(this);
+
           this.CargoShipsManager.preload();
+          this.SpaceStationManager.preload();
         },
         create() {
           this.CargoShipsManager.create();
+          this.SpaceStationManager.create();
+          this.CollisionManager.create();
         },
         update() {
           this.CargoShipsManager.update();
+          this.SpaceStationManager.update();
         },
       },
     };
