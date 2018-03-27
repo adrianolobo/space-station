@@ -1,4 +1,4 @@
-export default class COllisionManager {
+export default class CollisionManager {
   constructor(scene) {
     this.scene = scene;
   }

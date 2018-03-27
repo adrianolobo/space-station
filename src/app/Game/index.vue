@@ -23,7 +23,7 @@ export default {
             x: 0,
             y: 0,
           },
-          debug: true,
+          debug: false,
         },
       },
       scene: {

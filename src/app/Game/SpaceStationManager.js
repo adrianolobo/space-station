@@ -1,4 +1,4 @@
-import SpaceStation from './SpaceStation';
+import SpaceStation from './Entities/SpaceStation/SpaceStation';
 
 export default class SpaceStationManager {
   constructor(scene) {
@@ -6,8 +6,10 @@ export default class SpaceStationManager {
     this.spaceStation = null;
   }
   preload() {
-    this.scene.load.image('space-station', '/static/img/space-station.png');
-    this.scene.load.image('cargo-bay-wall', '/static/img/cargo-bay-wall.png');
+    this.scene.load.image('solar-panel', '/static/img/solar-panel.png');
+    this.scene.load.image('solar-module', '/static/img/solar-module.png');
+    this.scene.load.image('social-module-1', '/static/img/social-module-1.png');
+    this.scene.load.image('connector-module', '/static/img/connector-module.png');
   }
   create() {
     this.spaceStation = new SpaceStation(this.scene);

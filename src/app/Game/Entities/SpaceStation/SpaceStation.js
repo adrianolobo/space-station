@@ -1,9 +1,30 @@
+import EnergyModule from './Modules/EnergyModule';
+import SocialModule from './Modules/SocialModule';
+
 export default class SpaceStation {
   constructor(scene) {
     this.scene = scene;
 
     this.path = null;
-    this.spaceStation = this.scene.matter.add.sprite(200, 200, 'space-station');
+    this.spaceStation = [];
+    this.spaceStation.push(new EnergyModule(scene, { x: 300, y: 200 }));
+    this.spaceStation.push(
+      new SocialModule(
+        scene,
+        this.spaceStation[0].getBaseModule(),
+        'left',
+        'horizontal',
+      ),
+    );
+    this.spaceStation.push(
+      new SocialModule(
+        scene,
+        this.spaceStation[1].getBaseModule(),
+        'left',
+        'horizontal',
+      ),
+    );
+    /*
     this.spaceStation.setBody({
       type: 'circle',
       radius: 134,
@@ -30,6 +51,7 @@ export default class SpaceStation {
     this.cargoBays.cargoBay1.sensor.gameObject = { __self: this };
     this.cargoBays.cargoBay1.wall1.__self = this;
     this.cargoBays.cargoBay1.wall2.__self = this;
+    */
   }
   update() {
     return this;
