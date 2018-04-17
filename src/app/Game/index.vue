@@ -4,7 +4,7 @@
 </template>
 
 <script>
-import Phaser from 'phaser/dist/phaser';
+import Phaser from 'phaser/dist/phaser.min';
 import CargoShipsManager from './CargoShipsManager';
 import SpaceStationManager from './SpaceStationManager';
 import CollisionManager from './CollisionManager';

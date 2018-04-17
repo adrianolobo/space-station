@@ -1,36 +1,30 @@
+// import Phaser from 'phaser/dist/phaser.min';
 import BaseModule from './BaseModule';
+import ModuleBuilder from './ModuleBuilder';
 
 export default class SocialModule extends BaseModule {
-  constructor(scene, relativeTo, side, direction) {
-    super(scene);
-    const originX = side === 'left' ? 1 : 0;
-    const originY = 0.5;
-    // TODO DEIXAR ESSE CALCULO TODO GENÉRICO
-    this.connectorModule = this.scene.matter.add
-      .sprite(0, 0, 'connector-module')
-      .setStatic(true)
-      .setOrigin(originX, originY);
-    console.log(origin);
-    let relativeBounds = relativeTo.getBounds();
-    this.connectorModule.setPosition(
-      relativeBounds.x,
-      relativeBounds.y + (relativeBounds.height / 2),
-    );
-    console.log(this.connectorModule);
-    this.socialModule = this.scene.matter.add
+  constructor(scene, parent, position, direction) {
+    const moduleSprite = 'social-module-1';
+    super(scene, parent, position, direction, moduleSprite);
+    this.parent = parent;
+    this.position = position;
+    this.direction = direction;
+    this._baseModule = this.scene.matter.add
       .sprite(0, 0, 'social-module-1')
-      .setStatic(true)
-      .setOrigin(originX, originY);
-    relativeBounds = this.connectorModule.getBounds();
-    this.socialModule.setPosition(
-      relativeBounds.x,
-      relativeBounds.y + (relativeBounds.height / 2),
+      .setStatic(true);
+    this._connector = this.scene.matter.add
+      .sprite(0, 0, 'connector-module')
+      .setStatic(true);
+    ModuleBuilder.modulePositioning(
+      this.baseModule,
+      this.connector,
+      this.parent.baseModule,
+      this.position,
+      this.direction,
     );
-    console.log(direction);
-    this.socialModule.__self = this;
-    this.connectorModule.__self = this;
   }
-  getBaseModule() {
-    return this.socialModule;
+
+  get connector() {
+    return this._connector;
   }
 }

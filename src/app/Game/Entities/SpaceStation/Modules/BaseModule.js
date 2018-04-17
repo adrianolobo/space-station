@@ -5,4 +5,10 @@ export default class BaseModule {
   collided() {
     return this;
   }
+  get baseModule() {
+    return this._baseModule;
+  }
+  get connector() {
+    return this._connector;
+  }
 }
