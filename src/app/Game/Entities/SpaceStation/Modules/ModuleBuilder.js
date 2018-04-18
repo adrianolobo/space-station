@@ -1,34 +1,34 @@
 export default {
   modulePositioning(newModule, connector, parent, position, direction) {
-    let parentSize = this._getSize(parent);
+    let parentSize = this.getSize(parent);
     if (parent.angle === 90) {
-      parentSize = this._invertSize(parentSize);
+      parentSize = this.invertSize(parentSize);
     }
-    let connectorSize = this._getSize(connector);
+    let connectorSize = this.getSize(connector);
     if (position === 'top' || position === 'bottom') {
       connector.setAngle(90);
-      connectorSize = this._invertSize(connectorSize);
+      connectorSize = this.invertSize(connectorSize);
     }
-    const parentPos = this._getPosition(parent);
-    const connectorPos = this._calcPosition(connectorSize, parentSize, parentPos, position);
+    const parentPos = this.getPosition(parent);
+    const connectorPos = this.calcPosition(connectorSize, parentSize, parentPos, position);
     connector.setPosition(connectorPos.x, connectorPos.y);
 
-    let moduleSize = this._getSize(newModule);
+    let moduleSize = this.getSize(newModule);
     if (direction === 'vertical') {
-      moduleSize = this._invertSize(moduleSize);
+      moduleSize = this.invertSize(moduleSize);
       newModule.setAngle(90);
     }
-    const newModulePos = this._calcPosition(moduleSize, connectorSize, connectorPos, position);
+    const newModulePos = this.calcPosition(moduleSize, connectorSize, connectorPos, position);
     newModule.setPosition(newModulePos.x, newModulePos.y);
   },
-  _calcPosition(moduleSize, parentSize, parentPos, position) {
+  calcPosition(moduleSize, parentSize, parentPos, position) {
     const modulePosition = { x: parentPos.x, y: parentPos.y };
 
-    const parentHalfWidth = this._getRoundedHalf(parentSize.width);
-    const parentHalfHeight = this._getRoundedHalf(parentSize.height);
+    const parentHalfWidth = this.getRoundedHalf(parentSize.width);
+    const parentHalfHeight = this.getRoundedHalf(parentSize.height);
 
-    const moduleHalfWidth = this._getRoundedHalf(moduleSize.width);
-    const moduleHalfHeight = this._getRoundedHalf(moduleSize.height);
+    const moduleHalfWidth = this.getRoundedHalf(moduleSize.width);
+    const moduleHalfHeight = this.getRoundedHalf(moduleSize.height);
     if (position === 'left') {
       modulePosition.x = parentPos.x - parentHalfWidth - moduleHalfWidth;
     } else if (position === 'right') {
@@ -40,16 +40,19 @@ export default {
     }
     return modulePosition;
   },
-  _getPosition(target) {
+  getPosition(target) {
     return { x: target.x, y: target.y };
   },
-  _getSize(target) {
+  getSize(target) {
     return { width: target.width, height: target.height };
   },
-  _invertSize(target) {
+  invertSize(target) {
     return { width: target.height, height: target.width };
   },
-  _getRoundedHalf(target) {
+  invertPosition(target) {
+    return { x: target.y, y: target.x };
+  },
+  getRoundedHalf(target) {
     return Math.floor(target / 2);
   },
 };

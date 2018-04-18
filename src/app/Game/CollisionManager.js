@@ -8,8 +8,8 @@ export default class CollisionManager {
       console.log(event.pairs[0].bodyB);
       event.pairs.forEach((pair) => {
         console.log(pair);
-        // pair.bodyA.gameObject.__self.collided(pair.bodyB, pair.bodyA);
-        // pair.bodyB.gameObject.__self.collided(pair.bodyA, pair.bodyB);
+        pair.bodyA.gameObject.__self.collided(pair.bodyB, pair.bodyA);
+        pair.bodyB.gameObject.__self.collided(pair.bodyA, pair.bodyB);
       });
     });
   }

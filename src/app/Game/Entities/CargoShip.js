@@ -12,7 +12,6 @@ export default class CargoShip {
     this.scene = scene;
 
     this.state = CARGO_SHIP_STATES.MOVING;
-    this.unloadTime = 5000;
 
     this.path = null;
     this.cargoShip = this.scene.matter.add.sprite(600, 300, 'cargo-ship');
@@ -88,7 +87,7 @@ export default class CargoShip {
   checkSprite(sprite) {
     return this.cargoShip === sprite;
   }
-  tractorBeam(enterCoords, leaveCoords) {
+  tractorBeam(enterCoords) {
     if (this.state !== CARGO_SHIP_STATES.MOVING) {
       return;
     }
@@ -97,12 +96,6 @@ export default class CargoShip {
     enterCoords.forEach((coord) => {
       this.movePath(coord);
     });
-    setTimeout(() => {
-      this.beginPath({ x: this.cargoShip.x, y: this.cargoShip.y });
-      leaveCoords.forEach((coord) => {
-        this.movePath(coord);
-      });
-    }, this.unloadTime);
   }
   collided() {
     return this;
