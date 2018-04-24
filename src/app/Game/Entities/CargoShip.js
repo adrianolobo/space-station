@@ -1,4 +1,5 @@
 import Phaser from 'phaser/dist/phaser';
+import collisionCategories from '../Constants/collisionCategories';
 
 const CARGO_SHIP_STATES = {
   MOVING: 'moving',
@@ -8,18 +9,19 @@ const CARGO_SHIP_STATES = {
 };
 
 export default class CargoShip {
-  constructor(scene) {
+  constructor(scene, position) {
     this.scene = scene;
 
     this.state = CARGO_SHIP_STATES.MOVING;
 
     this.path = null;
-    this.cargoShip = this.scene.matter.add.sprite(600, 300, 'cargo-ship');
+    this.cargoShip = this.scene.matter.add.sprite(position.x, position.y, 'cargo-ship');
     this.cargoShip.__self = this;
     this.cargoShip.name = 'CargoShip';
     this.cargoShip.setInteractive();
     this.cargoShip.setFrictionAir(0);
-
+    this.cargoShip.setCollisionCategory(collisionCategories.SPACE_SHIPS);
+    this.setCollidesWithDefault();
     this.graphics = this.scene.add.graphics();
   }
   update() {
@@ -91,11 +93,24 @@ export default class CargoShip {
     if (this.state !== CARGO_SHIP_STATES.MOVING) {
       return;
     }
+    this.setCollidesWithShips();
     this.state = CARGO_SHIP_STATES.TRACTOR;
     this.beginPath({ x: this.cargoShip.x, y: this.cargoShip.y });
     enterCoords.forEach((coord) => {
       this.movePath(coord);
     });
+  }
+  setCollidesWithDefault() {
+    this.cargoShip.setCollidesWith([
+      collisionCategories.DEFAULT,
+      collisionCategories.SPACE_SHIPS,
+      collisionCategories.SPACE_STATION,
+    ]);
+  }
+  setCollidesWithShips() {
+    this.cargoShip.setCollidesWith([
+      collisionCategories.SPACE_SHIPS,
+    ]);
   }
   collided() {
     return this;

@@ -1,5 +1,6 @@
 import BaseModule from './BaseModule';
 import ModuleBuilder from './ModuleBuilder';
+import collisionCategories from '../../../Constants/collisionCategories';
 
 export default class SocialModule extends BaseModule {
   constructor(scene, parent, position, direction) {
@@ -27,6 +28,10 @@ export default class SocialModule extends BaseModule {
         isSensor: true,
       },
     );
+    console.log('this.sensor');
+    console.log(this.sensor);
+    console.log('****************');
+    this.sensor.collisionFilter.category = collisionCategories.SPACE_STATION;
     this.sensor.gameObject = { __self: this };
   }
   collided(collider, collided) {
