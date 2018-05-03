@@ -8,11 +8,14 @@ const CARGO_SHIP_STATES = {
   UNLOADED: 'unloaded',
 };
 
+const TIME_PER_CARGO = 1000;
+
 export default class CargoShip {
   constructor(scene, position) {
     this.scene = scene;
 
     this.state = CARGO_SHIP_STATES.MOVING;
+    this.amountCargos = 4;
 
     this.path = null;
     this.cargoShip = this.scene.matter.add.sprite(position.x, position.y, 'cargo-ship');
@@ -34,13 +37,16 @@ export default class CargoShip {
   }
   _move() {
     if (((this.path || {}).curves || []).length === 0) {
+      if (this.state === CARGO_SHIP_STATES.TRACTOR) {
+        this.setUnloadingState();
+      }
       return;
     }
     const point = this.path.curves[0].p0;
     const spritePos = { x: this.cargoShip.x, y: this.cargoShip.y };
     const angle = Phaser.Math.Angle.BetweenPoints(spritePos, point);
-    this.cargoShip.setVelocityX(Math.cos(angle));
-    this.cargoShip.setVelocityY(Math.sin(angle));
+    this.cargoShip.setAngle(Phaser.Math.RadToDeg(angle));
+    this.goFoward();
     const distance = Phaser.Math.Distance.Between(point.x, point.y, spritePos.x, spritePos.y);
     if (distance < 1) {
       this.path.curves.shift();
@@ -55,7 +61,10 @@ export default class CargoShip {
       angleToTurn = angle;
     }
     */
-    this.cargoShip.setAngle(Phaser.Math.RadToDeg(angle));
+  }
+  goFoward() {
+    this.cargoShip.setVelocityX(Math.cos(this.cargoShip.rotation));
+    this.cargoShip.setVelocityY(Math.sin(this.cargoShip.rotation));
   }
   beginPath(position) {
     this.path = new Phaser.Curves.Path(position.x, position.y);
@@ -94,7 +103,7 @@ export default class CargoShip {
       return;
     }
     this.setCollidesWithShips();
-    this.state = CARGO_SHIP_STATES.TRACTOR;
+    this.setState(CARGO_SHIP_STATES.TRACTOR);
     this.beginPath({ x: this.cargoShip.x, y: this.cargoShip.y });
     enterCoords.forEach((coord) => {
       this.movePath(coord);
@@ -111,6 +120,20 @@ export default class CargoShip {
     this.cargoShip.setCollidesWith([
       collisionCategories.SPACE_SHIPS,
     ]);
+  }
+  setUnloadingState() {
+    this.setState(CARGO_SHIP_STATES.UNLOADING);
+    this.cargoShip.setVelocity(0, 0);
+    setTimeout(() => {
+      this.setUnloadedState();
+      this.goFoward();
+    }, this.amountCargos * TIME_PER_CARGO);
+  }
+  setUnloadedState() {
+    this.setState(CARGO_SHIP_STATES.UNLOADED);
+  }
+  setState(state) {
+    this.state = state;
   }
   collided() {
     return this;
