@@ -9,6 +9,7 @@ const CARGO_SHIP_STATES = {
 };
 
 const TIME_PER_CARGO = 1000;
+const TIME_INVINCIBILITY_AFTER_UNLOAD = 3000;
 
 export default class CargoShip {
   constructor(scene, position) {
@@ -18,14 +19,47 @@ export default class CargoShip {
     this.amountCargos = 4;
 
     this.path = null;
-    this.cargoShip = this.scene.matter.add.sprite(position.x, position.y, 'cargo-ship');
+    this.cargoShipImage = this.scene.add.image(0, 0, 'cargo-ship');
+    this.addCargos();
+    this.cargoShipContainer = this.scene.add.container(position.x, position.y, [
+      this.cargoShipImage,
+      ...this.cargos,
+    ]);
+    console.log(this.cargoShipContainer);
+    console.log(this.cargos);
+    this.cargoShipContainer.setSize(this.cargoShipImage.width, this.cargoShipImage.height);
+    this.cargoShip = this.scene.matter.add.gameObject(this.cargoShipContainer);
     this.cargoShip.__self = this;
     this.cargoShip.name = 'CargoShip';
-    this.cargoShip.setInteractive();
+    const hitArea = new Phaser.Geom.Rectangle(0, 0,
+      this.cargoShipImage.width,
+      this.cargoShipImage.height,
+    );
+    this.cargoShip.setInteractive(hitArea, Phaser.Geom.Rectangle.Contains);
     this.cargoShip.setFrictionAir(0);
     this.cargoShip.setCollisionCategory(collisionCategories.SPACE_SHIPS);
     this.setCollidesWithDefault();
     this.graphics = this.scene.add.graphics();
+  }
+  addCargos() {
+    this.cargos = [];
+    for (let i = 0; i < this.amountCargos; i += 1) {
+      const cargoSprite = i % 2 ? 'cargo-red' : 'cargo-blue';
+      const cargo = this.scene.add.image(0, 0, cargoSprite).setOrigin(0, 0);
+      this.cargos.push(cargo);
+    }
+    const originX = -(this.cargoShipImage.width / 2);
+    const originY = -(this.cargoShipImage.height / 2);
+    const startPadding = 10;
+    const paddingCargoX = 1;
+    const halfLength = this.cargos.length / 2;
+    this.cargos.forEach((cargo, key) => {
+      const isSecondHalf = key >= halfLength;
+      const mutliplierX = isSecondHalf ? this.cargos.length - key - 1 : key;
+      const positionY = isSecondHalf ? (this.cargoShipImage.height / 2) - cargo.height : originY;
+      const positionX = originX + startPadding + ((paddingCargoX + cargo.width) * mutliplierX);
+      cargo.setPosition(positionX, positionY);
+    });
   }
   update() {
     this.graphics.clear();
@@ -71,7 +105,7 @@ export default class CargoShip {
   }
   movePath(position) {
     if (!this.path) {
-      return;
+      this.beginPath(position);
     }
     const lastLine = this.path.getEndPoint();
     const distance = Phaser.Math.Distance.Between(
@@ -92,8 +126,13 @@ export default class CargoShip {
       }
     }
   }
-  endPath(position) {
-    this.path.lineTo(position.x, position.y);
+  requestUserMove(position, state) {
+    if (this.canUserControl()) {
+      if (state === 'begin') {
+        this.beginPath(position);
+      }
+      this.movePath(position);
+    }
   }
   checkSprite(sprite) {
     return this.cargoShip === sprite;
@@ -102,6 +141,7 @@ export default class CargoShip {
     if (this.state !== CARGO_SHIP_STATES.MOVING) {
       return;
     }
+    this.resetPath();
     this.setCollidesWithShips();
     this.setState(CARGO_SHIP_STATES.TRACTOR);
     this.beginPath({ x: this.cargoShip.x, y: this.cargoShip.y });
@@ -121,19 +161,37 @@ export default class CargoShip {
       collisionCategories.SPACE_SHIPS,
     ]);
   }
+  resetPath() {
+    this.path = null;
+  }
   setUnloadingState() {
     this.setState(CARGO_SHIP_STATES.UNLOADING);
     this.cargoShip.setVelocity(0, 0);
     setTimeout(() => {
       this.setUnloadedState();
       this.goFoward();
+      setTimeout(() => {
+        this.setCollidesWithDefault();
+        console.log('NOT INVINCIBLE');
+      }, TIME_INVINCIBILITY_AFTER_UNLOAD);
     }, this.amountCargos * TIME_PER_CARGO);
+    let cargoToRemoveIndex = this.cargos.length - 1;
+    const unloadInterval = setInterval(() => {
+      this.cargos[cargoToRemoveIndex].destroy();
+      cargoToRemoveIndex -= 1;
+      if (cargoToRemoveIndex === -1) {
+        clearInterval(unloadInterval);
+      }
+    }, TIME_PER_CARGO);
   }
   setUnloadedState() {
     this.setState(CARGO_SHIP_STATES.UNLOADED);
   }
   setState(state) {
     this.state = state;
+  }
+  canUserControl() {
+    return this.state === CARGO_SHIP_STATES.MOVING || this.state === CARGO_SHIP_STATES.UNLOADED;
   }
   collided() {
     return this;
