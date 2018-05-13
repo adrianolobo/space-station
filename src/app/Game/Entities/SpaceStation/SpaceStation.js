@@ -8,7 +8,11 @@ export default class SpaceStation {
 
     this.path = null;
     this.spaceStation = [];
-    this.spaceStation.push(new EnergyModule(scene, { x: 350, y: 300 }));
+    const gameConfig = this.scene.scene.systems.game.config;
+    this.spaceStation.push(new EnergyModule(scene, {
+      x: gameConfig.width / 2,
+      y: gameConfig.height / 2,
+    }));
     this.spaceStation[1] = new SocialModule(scene, this.spaceStation[0], 'left', 'horizontal');
     this.spaceStation[2] = new SocialModule(scene, this.spaceStation[1], 'left', 'vertical');
     this.spaceStation[3] = new CargoModule(scene, this.spaceStation[2], 'left', 'vertical');

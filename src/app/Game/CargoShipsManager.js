@@ -1,3 +1,4 @@
+import Phaser from 'phaser/dist/phaser';
 import CargoShip from './Entities/CargoShip';
 
 export default class CargoShipsManager {
@@ -12,9 +13,50 @@ export default class CargoShipsManager {
     this.scene.load.image('cargo-blue', '/static/img/cargo-blue.png');
   }
   create() {
-    this.ships.push(new CargoShip(this.scene, { x: 600, y: 300 }));
-    this.ships.push(new CargoShip(this.scene, { x: 200, y: 200 }));
     this.manageInputs();
+    // REMOVER
+    this.graphics = this.scene.add.graphics();
+    this.graphics.lineStyle(2, 0xffffff, 1);
+    const gameConfig = this.scene.scene.systems.game.config;
+    const originX = gameConfig.width / 2;
+    const originY = gameConfig.height / 2;
+    const radius = 300;
+    console.log(this.scene);
+    console.log(originX);
+    console.log(originY);
+    this.path = new Phaser.Curves.Path(originX, originY);
+    for (let i = 0; i < 2 * Math.PI; i += 0.01) {
+      this.path.lineTo(
+        (Math.sin(i * Math.PI) * radius) + originX,
+        (Math.cos(i * Math.PI) * radius) + originY,
+      );
+    }
+    let angle = Math.random() * Math.PI * 2;
+    this.ships.push(new CargoShip(this.scene, {
+      x: (Math.cos(angle) * radius) + originX,
+      y: (Math.sin(angle) * radius) + originY,
+    }));
+    angle = Math.random() * Math.PI * 2;
+    this.ships.push(new CargoShip(this.scene, {
+      x: (Math.cos(angle) * radius) + originX,
+      y: (Math.sin(angle) * radius) + originY,
+    }));
+    angle = Math.random() * Math.PI * 2;
+    this.ships.push(new CargoShip(this.scene, {
+      x: (Math.cos(angle) * radius) + originX,
+      y: (Math.sin(angle) * radius) + originY,
+    }));
+    angle = Math.random() * Math.PI * 2;
+    this.ships.push(new CargoShip(this.scene, {
+      x: (Math.cos(angle) * radius) + originX,
+      y: (Math.sin(angle) * radius) + originY,
+    }));
+    angle = Math.random() * Math.PI * 2;
+    this.ships.push(new CargoShip(this.scene, {
+      x: (Math.cos(angle) * radius) + originX,
+      y: (Math.sin(angle) * radius) + originY,
+    }));
+    this.path.draw(this.graphics);
   }
   update() {
     this.ships.forEach((ship) => {
