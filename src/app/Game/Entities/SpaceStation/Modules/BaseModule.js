@@ -1,5 +1,6 @@
 import ModuleBuilder from './ModuleBuilder';
 import collisionCategories from '../../../Constants/collisionCategories';
+import depth from '../../../Constants/depth';
 
 export default class BaseModule {
   constructor(scene) {
@@ -20,10 +21,11 @@ export default class BaseModule {
       this.position,
       this.direction,
     );
-
     BaseModule.setDefaultCollisionCategories(this._connector);
     BaseModule.setDefaultCollisionCategories(this._baseModule);
 
+    this.baseModule.setDepth(depth.BaseModule);
+    this.connector.setDepth(depth.ModuleConnector);
     this.baseModule.__self = this;
     this.connector.__self = this;
   }

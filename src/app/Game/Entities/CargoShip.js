@@ -1,5 +1,6 @@
 import Phaser from 'phaser/dist/phaser';
 import collisionCategories from '../Constants/collisionCategories';
+import depth from '../Constants/depth';
 
 const CARGO_SHIP_STATES = {
   MOVING: 'moving',
@@ -25,8 +26,7 @@ export default class CargoShip {
       this.cargoShipImage,
       ...this.cargos,
     ]);
-    console.log(this.cargoShipContainer);
-    console.log(this.cargos);
+    this.cargoShipContainer.setDepth(depth.CargoShip);
     this.cargoShipContainer.setSize(this.cargoShipImage.width, this.cargoShipImage.height);
     this.cargoShip = this.scene.matter.add.gameObject(this.cargoShipContainer);
     this.cargoShip.__self = this;
@@ -172,7 +172,6 @@ export default class CargoShip {
       this.goFoward();
       setTimeout(() => {
         this.setCollidesWithDefault();
-        console.log('NOT INVINCIBLE');
       }, TIME_INVINCIBILITY_AFTER_UNLOAD);
     }, this.amountCargos * TIME_PER_CARGO);
     let cargoToRemoveIndex = this.cargos.length - 1;

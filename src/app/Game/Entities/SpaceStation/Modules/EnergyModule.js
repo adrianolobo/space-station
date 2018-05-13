@@ -13,7 +13,6 @@ export default class EnergyModule extends BaseModule {
     );
     this.solarPanel1 = this.scene.matter.add
       .sprite(0, 0, 'solar-panel')
-      .setStatic(true)
       .setFlipY(true);
     this.solarPanel1.setPosition(
       this._baseModule.x,

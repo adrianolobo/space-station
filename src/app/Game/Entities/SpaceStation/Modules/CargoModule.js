@@ -28,16 +28,11 @@ export default class SocialModule extends BaseModule {
         isSensor: true,
       },
     );
-    console.log('this.sensor');
-    console.log(this.sensor);
-    console.log('****************');
     this.sensor.collisionFilter.category = collisionCategories.SPACE_STATION;
     this.sensor.gameObject = { __self: this };
   }
   collided(collider, collided) {
-    console.log('CARGO MODULE');
     if (collided === this.sensor) {
-      console.log('TRATOR BEEAAAMMM');
       const firstCoords = {};
 
       const colliderPos = ModuleBuilder.getPosition(collider.gameObject);

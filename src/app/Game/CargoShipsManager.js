@@ -15,7 +15,6 @@ export default class CargoShipsManager {
     this.ships.push(new CargoShip(this.scene, { x: 600, y: 300 }));
     this.ships.push(new CargoShip(this.scene, { x: 200, y: 200 }));
     this.manageInputs();
-    console.log(this.scene.matter);
   }
   update() {
     this.ships.forEach((ship) => {
