@@ -77,10 +77,9 @@ export default class CargoShip {
       return;
     }
     const point = this.path.curves[0].p0;
-    const spritePos = { x: this.cargoShip.x, y: this.cargoShip.y };
-    const angle = Phaser.Math.Angle.BetweenPoints(spritePos, point);
-    this.cargoShip.setAngle(Phaser.Math.RadToDeg(angle));
+    this.turnTo(point);
     this.goFoward();
+    const spritePos = { x: this.cargoShip.x, y: this.cargoShip.y };
     const distance = Phaser.Math.Distance.Between(point.x, point.y, spritePos.x, spritePos.y);
     if (distance < 1) {
       this.path.curves.shift();
@@ -95,6 +94,11 @@ export default class CargoShip {
       angleToTurn = angle;
     }
     */
+  }
+  turnTo(point) {
+    const spritePos = { x: this.cargoShip.x, y: this.cargoShip.y };
+    const angle = Phaser.Math.Angle.BetweenPoints(spritePos, point);
+    this.cargoShip.setAngle(Phaser.Math.RadToDeg(angle));
   }
   goFoward() {
     this.cargoShip.setVelocityX(Math.cos(this.cargoShip.rotation));

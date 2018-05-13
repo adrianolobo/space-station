@@ -20,7 +20,7 @@ export default class CargoShipsManager {
     const gameConfig = this.scene.scene.systems.game.config;
     const originX = gameConfig.width / 2;
     const originY = gameConfig.height / 2;
-    const radius = 300;
+    const radius = 800;
     console.log(this.scene);
     console.log(originX);
     console.log(originY);
@@ -31,32 +31,17 @@ export default class CargoShipsManager {
         (Math.cos(i * Math.PI) * radius) + originY,
       );
     }
-    let angle = Math.random() * Math.PI * 2;
-    this.ships.push(new CargoShip(this.scene, {
-      x: (Math.cos(angle) * radius) + originX,
-      y: (Math.sin(angle) * radius) + originY,
-    }));
-    angle = Math.random() * Math.PI * 2;
-    this.ships.push(new CargoShip(this.scene, {
-      x: (Math.cos(angle) * radius) + originX,
-      y: (Math.sin(angle) * radius) + originY,
-    }));
-    angle = Math.random() * Math.PI * 2;
-    this.ships.push(new CargoShip(this.scene, {
-      x: (Math.cos(angle) * radius) + originX,
-      y: (Math.sin(angle) * radius) + originY,
-    }));
-    angle = Math.random() * Math.PI * 2;
-    this.ships.push(new CargoShip(this.scene, {
-      x: (Math.cos(angle) * radius) + originX,
-      y: (Math.sin(angle) * radius) + originY,
-    }));
-    angle = Math.random() * Math.PI * 2;
-    this.ships.push(new CargoShip(this.scene, {
-      x: (Math.cos(angle) * radius) + originX,
-      y: (Math.sin(angle) * radius) + originY,
-    }));
-    this.path.draw(this.graphics);
+    setInterval(() => {
+      const angle = Math.random() * Math.PI * 2;
+      const newShip = new CargoShip(this.scene, {
+        x: (Math.cos(angle) * radius) + originX,
+        y: (Math.sin(angle) * radius) + originY,
+      });
+      this.ships.push(newShip);
+      newShip.turnTo({ x: originX, y: originY });
+      newShip.goFoward();
+    }, 5000);
+    // this.path.draw(this.graphics);
   }
   update() {
     this.ships.forEach((ship) => {
