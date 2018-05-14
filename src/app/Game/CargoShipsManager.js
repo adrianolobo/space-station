@@ -1,4 +1,3 @@
-import Phaser from 'phaser/dist/phaser';
 import CargoShip from './Entities/CargoShip';
 
 export default class CargoShipsManager {
@@ -14,34 +13,22 @@ export default class CargoShipsManager {
   }
   create() {
     this.manageInputs();
-    // REMOVER
-    this.graphics = this.scene.add.graphics();
-    this.graphics.lineStyle(2, 0xffffff, 1);
+    this.newShip();
+    setInterval(this.newShip.bind(this), 5000);
+  }
+  newShip() {
+    const radius = 600;
     const gameConfig = this.scene.scene.systems.game.config;
     const originX = gameConfig.width / 2;
     const originY = gameConfig.height / 2;
-    const radius = 800;
-    console.log(this.scene);
-    console.log(originX);
-    console.log(originY);
-    this.path = new Phaser.Curves.Path(originX, originY);
-    for (let i = 0; i < 2 * Math.PI; i += 0.01) {
-      this.path.lineTo(
-        (Math.sin(i * Math.PI) * radius) + originX,
-        (Math.cos(i * Math.PI) * radius) + originY,
-      );
-    }
-    setInterval(() => {
-      const angle = Math.random() * Math.PI * 2;
-      const newShip = new CargoShip(this.scene, {
-        x: (Math.cos(angle) * radius) + originX,
-        y: (Math.sin(angle) * radius) + originY,
-      });
-      this.ships.push(newShip);
-      newShip.turnTo({ x: originX, y: originY });
-      newShip.goFoward();
-    }, 5000);
-    // this.path.draw(this.graphics);
+    const angle = Math.random() * Math.PI * 2;
+    const newShip = new CargoShip(this.scene, {
+      x: (Math.cos(angle) * radius) + originX,
+      y: (Math.sin(angle) * radius) + originY,
+    });
+    this.ships.push(newShip);
+    newShip.turnTo({ x: originX, y: originY });
+    newShip.goFoward();
   }
   update() {
     this.ships.forEach((ship) => {

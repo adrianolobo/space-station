@@ -26,6 +26,7 @@ export default class CargoShip {
       this.cargoShipImage,
       ...this.cargos,
     ]);
+    this.velocity = 0.5;
     this.cargoShipContainer.setDepth(depth.CargoShip);
     this.cargoShipContainer.setSize(this.cargoShipImage.width, this.cargoShipImage.height);
     this.cargoShip = this.scene.matter.add.gameObject(this.cargoShipContainer);
@@ -101,8 +102,8 @@ export default class CargoShip {
     this.cargoShip.setAngle(Phaser.Math.RadToDeg(angle));
   }
   goFoward() {
-    this.cargoShip.setVelocityX(Math.cos(this.cargoShip.rotation));
-    this.cargoShip.setVelocityY(Math.sin(this.cargoShip.rotation));
+    this.cargoShip.setVelocityX(Math.cos(this.cargoShip.rotation) * this.velocity);
+    this.cargoShip.setVelocityY(Math.sin(this.cargoShip.rotation) * this.velocity);
   }
   beginPath(position) {
     this.path = new Phaser.Curves.Path(position.x, position.y);
