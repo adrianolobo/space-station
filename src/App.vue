@@ -1,7 +1,5 @@
 <template>
-  <div id="app">
-    <game />
-  </div>
+  <game />
 </template>
 
 <script>
@@ -14,8 +12,16 @@ export default {
   },
 };
 </script>
-
-<style>
-  #app {
-  }
+<style src="./styles/fonts.sass" lang="sass"></style>
+<style lang="sass">
+  body,
+  html
+    padding: 0px
+    margin: 0px
+    background-color: #1b1b1b
+    display: flex
+    width: 100%
+    height: 100%
+    justify-content: center
+    align-items: center
 </style>

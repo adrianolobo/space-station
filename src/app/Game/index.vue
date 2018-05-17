@@ -14,8 +14,8 @@ export default {
     const config = {
       parent: this.$refs.gameCanvasContainer,
       type: Phaser.AUTO,
-      width: 800,
-      height: 600,
+      width: 960,
+      height: 540,
       physics: {
         default: 'matter',
         matter: {
@@ -39,6 +39,9 @@ export default {
           this.CargoShipsManager.create();
           this.SpaceStationManager.create();
           this.CollisionManager.create();
+          this.events.on('resize', (width, height) => {
+            this.cameras.resize(width, height);
+          });
         },
         update() {
           this.CargoShipsManager.update();
@@ -47,6 +50,9 @@ export default {
       },
     };
     this.game = new Phaser.Game(config);
+    window.addEventListener('resize', () => {
+      // this.game.resize(window.innerWidth, window.innerHeight);
+    });
   },
 };
 </script>
