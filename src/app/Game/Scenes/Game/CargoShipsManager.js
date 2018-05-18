@@ -1,4 +1,4 @@
-import CargoShip from './Entities/CargoShip';
+import CargoShip from '../../Entities/CargoShip';
 
 export default class CargoShipsManager {
   constructor(scene) {

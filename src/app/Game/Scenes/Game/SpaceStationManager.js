@@ -1,4 +1,4 @@
-import SpaceStation from './Entities/SpaceStation/SpaceStation';
+import SpaceStation from '../../Entities/SpaceStation/SpaceStation';
 
 export default class SpaceStationManager {
   constructor(scene) {
