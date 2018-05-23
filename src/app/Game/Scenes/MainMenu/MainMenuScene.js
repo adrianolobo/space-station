@@ -11,7 +11,7 @@ export default class MainMenu extends Phaser.Scene {
     this.circle = new Phaser.Geom.Circle(100, 100, 100);
     this.graphics.strokeCircleShape(this.circle);
     setTimeout(() => {
-      this.scene.add('GameScene');
-    }, 5000);
+      this.scene.start('GameScene');
+    }, 100);
   }
 }

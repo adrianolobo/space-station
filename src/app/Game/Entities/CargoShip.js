@@ -41,6 +41,18 @@ export default class CargoShip {
     this.cargoShip.setCollisionCategory(collisionCategories.SPACE_SHIPS);
     this.setCollidesWithDefault();
     this.graphics = this.scene.add.graphics();
+
+    this.flames = this.scene.add.particles('flares');
+    this.emitter = this.flames.createEmitter({
+      frame: 'yellow',
+      lifespan: 70,
+      speed: { min: 400, max: 600 },
+      scale: { start: 0.1, end: 0 },
+      blendMode: 'ADD',
+    });
+    this.emitter.startFollow(this.cargoShipContainer);
+    this.emitter.followOffset.x = this.cargoShipImage.width / 2;
+    this.emitter.followOffset.y = this.cargoShipImage.height / 2;
   }
   addCargos() {
     this.cargos = [];
@@ -99,7 +111,10 @@ export default class CargoShip {
   turnTo(point) {
     const spritePos = { x: this.cargoShip.x, y: this.cargoShip.y };
     const angle = Phaser.Math.Angle.BetweenPoints(spritePos, point);
-    this.cargoShip.setAngle(Phaser.Math.RadToDeg(angle));
+    const degAngle = Phaser.Math.RadToDeg(angle);
+    this.cargoShip.setAngle(degAngle);
+    const oppositeAngle = (degAngle + 180) % 360;
+    this.emitter.setAngle(oppositeAngle);
   }
   goFoward() {
     this.cargoShip.setVelocityX(Math.cos(this.cargoShip.rotation) * this.velocity);

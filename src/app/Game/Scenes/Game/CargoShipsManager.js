@@ -10,11 +10,24 @@ export default class CargoShipsManager {
     this.scene.load.image('cargo-ship', '/static/img/cargo-ship.png');
     this.scene.load.image('cargo-red', '/static/img/cargo-red.png');
     this.scene.load.image('cargo-blue', '/static/img/cargo-blue.png');
+    this.scene.load.atlas('flares', '/static/img/flares.png', '/static/flares.json');
   }
   create() {
     this.manageInputs();
     this.newShip();
     setInterval(this.newShip.bind(this), 5000);
+    console.log('REMOVERRRRR');
+    this.flames = this.scene.add.particles('flares');
+    this.emitter = this.flames.createEmitter({
+      x: 100,
+      y: 100,
+      frame: 'yellow',
+      speed: 100,
+      scale: { start: 0.2, end: 0 },
+      blendMode: 'ADD',
+    });
+    console.log(this.flames);
+    console.log(this.emitter);
   }
   newShip() {
     const radius = 600;
