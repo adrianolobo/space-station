@@ -51,8 +51,6 @@ export default class CargoShip {
       blendMode: 'ADD',
     });
     this.emitter.startFollow(this.cargoShipContainer);
-    this.emitter.followOffset.x = this.cargoShipImage.width / 2;
-    this.emitter.followOffset.y = this.cargoShipImage.height / 2;
   }
   addCargos() {
     this.cargos = [];
@@ -115,6 +113,11 @@ export default class CargoShip {
     this.cargoShip.setAngle(degAngle);
     const oppositeAngle = (degAngle + 180) % 360;
     this.emitter.setAngle(oppositeAngle);
+    const halfWidth = this.cargoShipImage.width / 2;
+    // const halfHeight = this.cargoShipImage.height / 2;
+    this.emitter.followOffset.x = Math.cos(this.cargoShip.rotation) * halfWidth * -1;
+    this.emitter.followOffset.y = Math.sin(this.cargoShip.rotation) * halfWidth * -1;
+    console.log(this.emitter.followOffset);
   }
   goFoward() {
     this.cargoShip.setVelocityX(Math.cos(this.cargoShip.rotation) * this.velocity);

@@ -14,8 +14,8 @@ export default class CargoShipsManager {
   }
   create() {
     this.manageInputs();
-    this.newShip();
-    setInterval(this.newShip.bind(this), 5000);
+    // this.newShip();
+    // setInterval(this.newShip.bind(this), 5000);
     console.log('REMOVERRRRR');
     this.flames = this.scene.add.particles('flares');
     this.emitter = this.flames.createEmitter({
@@ -26,6 +26,17 @@ export default class CargoShipsManager {
       scale: { start: 0.2, end: 0 },
       blendMode: 'ADD',
     });
+    const newShip = new CargoShip(this.scene, {
+      x: 200,
+      y: 200,
+    });
+    const gameConfig = this.scene.scene.systems.game.config;
+    const originX = gameConfig.width / 2;
+    const originY = gameConfig.height / 2;
+    newShip.turnTo({ x: originX, y: originY });
+    newShip.goFoward();
+    this.ships.push(newShip);
+    console.log(newShip);
     console.log(this.flames);
     console.log(this.emitter);
   }
