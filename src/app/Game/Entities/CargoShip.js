@@ -11,6 +11,7 @@ const CARGO_SHIP_STATES = {
 
 const TIME_PER_CARGO = 1000;
 const TIME_INVINCIBILITY_AFTER_UNLOAD = 3000;
+const EMITTER_LIFESPAN = 40;
 
 export default class CargoShip {
   constructor(scene, position) {
@@ -43,14 +44,18 @@ export default class CargoShip {
     this.graphics = this.scene.add.graphics();
 
     this.flames = this.scene.add.particles('flares');
-    this.emitter = this.flames.createEmitter({
+    this.flames.setDepth(depth.CargoShip);
+    const emitterConfig = {
       frame: 'yellow',
-      lifespan: 70,
-      speed: { min: 400, max: 600 },
-      scale: { start: 0.1, end: 0 },
+      lifespan: EMITTER_LIFESPAN,
+      speed: { min: 0, max: 300 },
+      scale: { start: 0.12, end: 0 },
       blendMode: 'ADD',
-    });
-    this.emitter.startFollow(this.cargoShipContainer);
+    };
+    this.emitters = [
+      this.flames.createEmitter(emitterConfig),
+      this.flames.createEmitter(emitterConfig),
+    ];
   }
   addCargos() {
     this.cargos = [];
@@ -79,6 +84,7 @@ export default class CargoShip {
       this.path.draw(this.graphics);
     }
     this._move();
+    this._handleEmitter();
   }
   _move() {
     if (((this.path || {}).curves || []).length === 0) {
@@ -111,13 +117,27 @@ export default class CargoShip {
     const angle = Phaser.Math.Angle.BetweenPoints(spritePos, point);
     const degAngle = Phaser.Math.RadToDeg(angle);
     this.cargoShip.setAngle(degAngle);
-    const oppositeAngle = (degAngle + 180) % 360;
-    this.emitter.setAngle(oppositeAngle);
-    const halfWidth = this.cargoShipImage.width / 2;
-    // const halfHeight = this.cargoShipImage.height / 2;
-    this.emitter.followOffset.x = Math.cos(this.cargoShip.rotation) * halfWidth * -1;
-    this.emitter.followOffset.y = Math.sin(this.cargoShip.rotation) * halfWidth * -1;
-    console.log(this.emitter.followOffset);
+  }
+  _handleEmitter() {
+    if (this.state === CARGO_SHIP_STATES.UNLOADING) {
+      this.emitters.forEach((e) => { e.lifespan.propertyValue = 0; });
+    } else {
+      this.emitters.forEach((e) => { e.lifespan.propertyValue = EMITTER_LIFESPAN; });
+    }
+    const emitterAngle = (this.cargoShip.angle + 180) % 360;
+    const cargoShipTransformMatrix = this.cargoShipImage.getWorldTransformMatrix();
+    this.emitters.forEach((e) => { e.setAngle(emitterAngle); });
+    const halfWidth = this.cargoShip.width / 2;
+    const halfHeight = this.cargoShip.height / 2;
+    const offset = 4;
+    this.emitters[0].setPosition(
+      cargoShipTransformMatrix.transformPoint(-halfWidth, -halfHeight + offset).x,
+      cargoShipTransformMatrix.transformPoint(-halfWidth, -halfHeight + offset).y,
+    );
+    this.emitters[1].setPosition(
+      cargoShipTransformMatrix.transformPoint(-halfWidth, +halfHeight - offset).x,
+      cargoShipTransformMatrix.transformPoint(-halfWidth, +halfHeight - offset).y,
+    );
   }
   goFoward() {
     this.cargoShip.setVelocityX(Math.cos(this.cargoShip.rotation) * this.velocity);

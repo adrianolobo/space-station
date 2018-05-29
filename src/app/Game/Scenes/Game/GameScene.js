@@ -8,6 +8,9 @@ export default class GameScene extends Phaser.Scene {
     super({ key: 'GameScene' });
   }
   preload() {
+    // COLOCAR EM UM LOADER
+    this.load.atlas('flares', '/static/img/flares.png', '/static/flares.json');
+
     this.CargoShipsManager = new CargoShipsManager(this);
     this.SpaceStationManager = new SpaceStationManager(this);
     this.CollisionManager = new CollisionManager(this);

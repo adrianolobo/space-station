@@ -1,3 +1,4 @@
+import Phaser from 'phaser/dist/phaser';
 import BaseModule from './BaseModule';
 import ModuleBuilder from './ModuleBuilder';
 import collisionCategories from '../../../Constants/collisionCategories';
@@ -10,6 +11,7 @@ export default class SocialModule extends BaseModule {
     this.direction = direction;
     this._createBaseModule('cargo-module');
     this._createSensor();
+    this._createLights();
   }
   _createSensor() {
     let sensorSize = ModuleBuilder.getSize(this.baseModule);
@@ -30,6 +32,30 @@ export default class SocialModule extends BaseModule {
     );
     this.sensor.collisionFilter.category = collisionCategories.SPACE_STATION;
     this.sensor.gameObject = { __self: this };
+  }
+  _createLights() {
+    console.log(this.baseModule);
+    const transformMatrix = this.baseModule.getWorldTransformMatrix();
+    const halfHeight = this.baseModule.height / 2;
+    this.pathLights = new Phaser.Curves.Path(
+      transformMatrix.transformPoint(0, halfHeight).x,
+      transformMatrix.transformPoint(0, halfHeight).y,
+    );
+    for (let i = 0; i < 10; i += 2) {
+      this.pathLights.lineTo(
+        transformMatrix.transformPoint(10 * i, halfHeight).x,
+        transformMatrix.transformPoint(10 * i, halfHeight).y,
+      );
+    }
+    this.flames = this.scene.add.particles('flares');
+    this.flames.createEmitter({
+      frame: 'yellow',
+      scale: { start: 0.1, end: 0 },
+      lifespan: 500,
+      frequency: 200,
+      blendMode: 'ADD',
+      emitZone: { type: 'edge', source: this.pathLights, quantity: 2, yoyo: false },
+    });
   }
   collided(collider, collided) {
     if (collided === this.sensor) {
