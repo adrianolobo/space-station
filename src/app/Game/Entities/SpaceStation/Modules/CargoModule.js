@@ -34,28 +34,41 @@ export default class SocialModule extends BaseModule {
     this.sensor.gameObject = { __self: this };
   }
   _createLights() {
-    console.log(this.baseModule);
     const transformMatrix = this.baseModule.getWorldTransformMatrix();
     const halfHeight = this.baseModule.height / 2;
-    this.pathLights = new Phaser.Curves.Path(
-      transformMatrix.transformPoint(0, halfHeight).x,
-      transformMatrix.transformPoint(0, halfHeight).y,
-    );
-    for (let i = 0; i < 10; i += 2) {
-      this.pathLights.lineTo(
-        transformMatrix.transformPoint(10 * i, halfHeight).x,
-        transformMatrix.transformPoint(10 * i, halfHeight).y,
-      );
-    }
+    const lightsPositionMargin = 3;
+    const lightsSize = (this.baseModule.width * 1.5) / 10;
+
     this.flames = this.scene.add.particles('flares');
-    this.flames.createEmitter({
-      frame: 'yellow',
-      scale: { start: 0.1, end: 0 },
-      lifespan: 500,
-      frequency: 200,
-      blendMode: 'ADD',
-      emitZone: { type: 'edge', source: this.pathLights, quantity: 2, yoyo: false },
-    });
+    this.pathLights = [];
+    this.lightEmitters = [];
+    const _createLight = (xMargin, hPos, color) => {
+      const lightPath = new Phaser.Curves.Path(
+        transformMatrix.transformPoint(0, hPos).x,
+        transformMatrix.transformPoint(0, hPos).y,
+      );
+      for (let i = 0; i < lightsSize; i += 2) {
+        lightPath.lineTo(
+          transformMatrix.transformPoint(xMargin * i, hPos).x,
+          transformMatrix.transformPoint(xMargin * i, hPos).y,
+        );
+      }
+      const lightEmitter = this.flames.createEmitter({
+        frame: color,
+        scale: { start: 0.05, end: 0 },
+        lifespan: 500,
+        frequency: 200,
+        blendMode: 'ADD',
+        alpha: { start: 1, end: 1 },
+        emitZone: { type: 'edge', source: lightPath, quantity: 2, yoyo: false },
+      });
+      this.pathLights.push(lightPath);
+      this.lightEmitters.push(lightEmitter);
+    };
+    _createLight(10, halfHeight - lightsPositionMargin, 'yellow');
+    _createLight(10, -halfHeight + lightsPositionMargin, 'blue');
+    _createLight(-10, -halfHeight + lightsPositionMargin, 'blue');
+    _createLight(-10, halfHeight - lightsPositionMargin, 'yellow');
   }
   collided(collider, collided) {
     if (collided === this.sensor) {
