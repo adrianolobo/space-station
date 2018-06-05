@@ -93,10 +93,10 @@ export default class CargoShip {
       }
       return;
     }
-    const point = this.path.curves[0].p0;
+    const point = this.path.curves[0].p1;
     this.turnTo(point);
     this.goFoward();
-    const spritePos = { x: this.cargoShip.x, y: this.cargoShip.y };
+    const spritePos = { x: this.cargoShipContainer.x, y: this.cargoShipContainer.y };
     const distance = Phaser.Math.Distance.Between(point.x, point.y, spritePos.x, spritePos.y);
     if (distance < 1) {
       this.path.curves.shift();
@@ -150,7 +150,7 @@ export default class CargoShip {
     if (!this.path) {
       this.beginPath(position);
     }
-    const lastLine = this.path.getEndPoint();
+    let lastLine = this.path.getEndPoint();
     const distance = Phaser.Math.Distance.Between(
       lastLine.x, lastLine.y,
       position.x, position.y,
@@ -158,15 +158,17 @@ export default class CargoShip {
     const MAX_DISTANCE = 10;
     if (distance > MAX_DISTANCE) {
       const amount = Math.floor(distance / MAX_DISTANCE);
-      for (let i = 0; i < amount; i += 1) {
+      for (let i = 1; i <= amount; i += 1) {
+        lastLine = this.path.getEndPoint();
         const deltaY = position.y - lastLine.y;
         const deltaX = position.x - lastLine.x;
         const angle = Math.atan2(deltaY, deltaX);
         this.path.lineTo(
-          lastLine.x + (Math.cos(angle) * MAX_DISTANCE * (i + 1)),
-          lastLine.y + (Math.sin(angle) * MAX_DISTANCE * (i + 1)),
+          lastLine.x + (Math.cos(angle) * MAX_DISTANCE),
+          lastLine.y + (Math.sin(angle) * MAX_DISTANCE),
         );
       }
+      this.path.lineTo(position.x, position.y);
     }
   }
   requestUserMove(position, state) {
