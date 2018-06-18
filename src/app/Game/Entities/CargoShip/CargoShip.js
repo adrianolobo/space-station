@@ -38,6 +38,7 @@ export default class CargoShip {
       this.cargoShipImage.width,
       this.cargoShipImage.height,
     );
+    this.cargoModuleUnloading = null;
     this.cargoShip.setInteractive(hitArea, Phaser.Geom.Rectangle.Contains);
     this.cargoShip.setFrictionAir(0);
     this.cargoShip.setCollisionCategory(collisionCategories.SPACE_SHIPS);
@@ -151,10 +152,12 @@ export default class CargoShip {
   checkSprite(sprite) {
     return this.cargoShip === sprite;
   }
-  tractorBeam(enterCoords) {
+  tractorBeam(enterCoords, cargoModule) {
     if (this.state !== CARGO_SHIP_STATES.MOVING) {
       return;
     }
+    this.cargoModuleUnloading = cargoModule;
+    this.cargoModuleUnloading.setBusy(true);
     this.resetPath();
     this.setCollidesWithShips();
     this.setState(CARGO_SHIP_STATES.TRACTOR);
@@ -185,6 +188,8 @@ export default class CargoShip {
     this.cargoShip.setVelocity(0, 0);
     setTimeout(() => {
       this.setUnloadedState();
+      this.cargoModuleUnloading.setBusy(false);
+      this.cargoModuleUnloading = null;
       this.goFoward();
       setTimeout(() => {
         this.setCollidesWithDefault();

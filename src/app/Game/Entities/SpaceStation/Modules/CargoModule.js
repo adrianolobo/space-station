@@ -9,6 +9,7 @@ export default class SocialModule extends BaseModule {
     this.parent = parent;
     this.position = position;
     this.direction = direction;
+    this.isBusy = false;
     this._createBaseModule('cargo-module');
     this._createSensor();
     this._createLights();
@@ -72,6 +73,9 @@ export default class SocialModule extends BaseModule {
     _createLight(-10, halfHeight - lightsPositionMargin, 'yellow');
   }
   collided(collider, collided) {
+    if (this.isBusy) {
+      return;
+    }
     if (collided === this.sensor && !collider.isSensor) {
       const firstCoords = {};
 
@@ -89,8 +93,10 @@ export default class SocialModule extends BaseModule {
       collider.gameObject.__self.tractorBeam([
         firstCoords,
         { x: this.baseModule.x, y: this.baseModule.y },
-      ]);
+      ], this);
     }
-    return this;
+  }
+  setBusy(state) {
+    this.isBusy = state;
   }
 }
