@@ -30,7 +30,8 @@ export default class SocialModule extends BaseModule {
         isSensor: true,
       },
     );
-    this.sensor.collisionFilter.category = collisionCategories.SPACE_STATION;
+    this.sensor.name = 'CARGO MODULE TRACTOR SENSOR';
+    this.sensor.collisionFilter.category = collisionCategories.TRACTOR_SENSOR;
     this.sensor.gameObject = { __self: this };
   }
   _createLights() {
@@ -71,7 +72,7 @@ export default class SocialModule extends BaseModule {
     _createLight(-10, halfHeight - lightsPositionMargin, 'yellow');
   }
   collided(collider, collided) {
-    if (collided === this.sensor) {
+    if (collided === this.sensor && !collider.isSensor) {
       const firstCoords = {};
 
       const colliderPos = ModuleBuilder.getPosition(collider.gameObject);

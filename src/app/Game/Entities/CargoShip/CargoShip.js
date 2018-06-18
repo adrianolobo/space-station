@@ -1,6 +1,8 @@
 import Phaser from 'phaser/dist/phaser';
-import collisionCategories from '../Constants/collisionCategories';
-import depth from '../Constants/depth';
+import collisionCategories from '../../Constants/collisionCategories';
+import depth from '../../Constants/depth';
+import EngineFlames from './EngineFlames';
+import ProximitySensor from './ProximitySensor';
 
 const CARGO_SHIP_STATES = {
   MOVING: 'moving',
@@ -11,7 +13,6 @@ const CARGO_SHIP_STATES = {
 
 const TIME_PER_CARGO = 1000;
 const TIME_INVINCIBILITY_AFTER_UNLOAD = 3000;
-const EMITTER_LIFESPAN = 40;
 
 export default class CargoShip {
   constructor(scene, position) {
@@ -42,20 +43,8 @@ export default class CargoShip {
     this.cargoShip.setCollisionCategory(collisionCategories.SPACE_SHIPS);
     this.setCollidesWithDefault();
     this.graphics = this.scene.add.graphics();
-
-    this.flames = this.scene.add.particles('flares');
-    this.flames.setDepth(depth.CargoShip);
-    const emitterConfig = {
-      frame: 'yellow',
-      lifespan: EMITTER_LIFESPAN,
-      speed: { min: 0, max: 300 },
-      scale: { start: 0.12, end: 0 },
-      blendMode: 'ADD',
-    };
-    this.emitters = [
-      this.flames.createEmitter(emitterConfig),
-      this.flames.createEmitter(emitterConfig),
-    ];
+    this.proximitySensor = new ProximitySensor(this.scene, this.cargoShip);
+    this.engineFlames = new EngineFlames(this.scene, this.cargoShip, this.cargoShipImage);
   }
   addCargos() {
     this.cargos = [];
@@ -84,7 +73,8 @@ export default class CargoShip {
       this.path.draw(this.graphics);
     }
     this._move();
-    this._handleEmitter();
+    this.engineFlames.handleEmitter(this.state === CARGO_SHIP_STATES.UNLOADING);
+    this.proximitySensor.update();
   }
   _move() {
     if (((this.path || {}).curves || []).length === 0) {
@@ -117,27 +107,6 @@ export default class CargoShip {
     const angle = Phaser.Math.Angle.BetweenPoints(spritePos, point);
     const degAngle = Phaser.Math.RadToDeg(angle);
     this.cargoShip.setAngle(degAngle);
-  }
-  _handleEmitter() {
-    if (this.state === CARGO_SHIP_STATES.UNLOADING) {
-      this.emitters.forEach((e) => { e.lifespan.propertyValue = 0; });
-    } else {
-      this.emitters.forEach((e) => { e.lifespan.propertyValue = EMITTER_LIFESPAN; });
-    }
-    const emitterAngle = (this.cargoShip.angle + 180) % 360;
-    const cargoShipTransformMatrix = this.cargoShipImage.getWorldTransformMatrix();
-    this.emitters.forEach((e) => { e.setAngle(emitterAngle); });
-    const halfWidth = this.cargoShip.width / 2;
-    const halfHeight = this.cargoShip.height / 2;
-    const offset = 4;
-    this.emitters[0].setPosition(
-      cargoShipTransformMatrix.transformPoint(-halfWidth, -halfHeight + offset).x,
-      cargoShipTransformMatrix.transformPoint(-halfWidth, -halfHeight + offset).y,
-    );
-    this.emitters[1].setPosition(
-      cargoShipTransformMatrix.transformPoint(-halfWidth, +halfHeight - offset).x,
-      cargoShipTransformMatrix.transformPoint(-halfWidth, +halfHeight - offset).y,
-    );
   }
   goFoward() {
     this.cargoShip.setVelocityX(Math.cos(this.cargoShip.rotation) * this.velocity);
@@ -189,6 +158,7 @@ export default class CargoShip {
     this.resetPath();
     this.setCollidesWithShips();
     this.setState(CARGO_SHIP_STATES.TRACTOR);
+    this.proximitySensor.setPreventWarning(true);
     this.beginPath({ x: this.cargoShip.x, y: this.cargoShip.y });
     enterCoords.forEach((coord) => {
       this.movePath(coord);
@@ -199,6 +169,7 @@ export default class CargoShip {
       collisionCategories.DEFAULT,
       collisionCategories.SPACE_SHIPS,
       collisionCategories.SPACE_STATION,
+      collisionCategories.TRACTOR_SENSOR,
     ]);
   }
   setCollidesWithShips() {
@@ -217,6 +188,7 @@ export default class CargoShip {
       this.goFoward();
       setTimeout(() => {
         this.setCollidesWithDefault();
+        this.proximitySensor.setPreventWarning(false);
       }, TIME_INVINCIBILITY_AFTER_UNLOAD);
     }, this.amountCargos * TIME_PER_CARGO);
     let cargoToRemoveIndex = this.cargos.length - 1;

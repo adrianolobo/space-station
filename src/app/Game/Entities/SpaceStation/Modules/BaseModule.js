@@ -40,6 +40,7 @@ export default class BaseModule {
     body.setCollidesWith([
       collisionCategories.DEFAULT,
       collisionCategories.SPACE_SHIPS,
+      collisionCategories.SHIP_PROXIMITY_SENSOR,
     ]);
   }
 }

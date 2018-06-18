@@ -2,4 +2,6 @@ export default {
   DEFAULT: 1,
   SPACE_SHIPS: 2,
   SPACE_STATION: 4,
+  TRACTOR_SENSOR: 8,
+  SHIP_PROXIMITY_SENSOR: 16,
 };

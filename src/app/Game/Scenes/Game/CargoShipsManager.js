@@ -1,4 +1,4 @@
-import CargoShip from '../../Entities/CargoShip';
+import CargoShip from '../../Entities/CargoShip/CargoShip';
 
 export default class CargoShipsManager {
   constructor(scene) {
@@ -16,8 +16,12 @@ export default class CargoShipsManager {
     // this.newShip();
     // setInterval(this.newShip.bind(this), 5000);
     const newShip = new CargoShip(this.scene, {
-      x: 200,
-      y: 200,
+      x: 150,
+      y: 150,
+    });
+    const newShip2 = new CargoShip(this.scene, {
+      x: 150,
+      y: 250,
     });
     const gameConfig = this.scene.scene.systems.game.config;
     const originX = gameConfig.width / 2;
@@ -25,6 +29,9 @@ export default class CargoShipsManager {
     newShip.turnTo({ x: originX, y: originY });
     newShip.goFoward();
     this.ships.push(newShip);
+    newShip2.turnTo({ x: originX, y: originY });
+    newShip2.goFoward();
+    this.ships.push(newShip2);
   }
   newShip() {
     const radius = 600;
