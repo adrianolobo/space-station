@@ -13,8 +13,8 @@ export default {
     const config = {
       parent: this.$refs.gameCanvasContainer,
       type: Phaser.AUTO,
-      width: 960,
-      height: 540,
+      width: document.body.clientWidth,
+      height: document.body.clientHeight,
       physics: {
         default: 'matter',
         matter: {
@@ -40,4 +40,9 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
+.hello {
+  width: 100%;
+  height: 100%;
+  display: flex
+}
 </style>

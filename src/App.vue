@@ -18,10 +18,6 @@ export default {
   html
     padding: 0px
     margin: 0px
-    background-color: #1b1b1b
-    display: flex
     width: 100%
     height: 100%
-    justify-content: center
-    align-items: center
 </style>
