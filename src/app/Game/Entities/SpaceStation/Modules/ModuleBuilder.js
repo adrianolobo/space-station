@@ -44,7 +44,7 @@ export default {
     return { x: target.x, y: target.y };
   },
   getSize(target) {
-    return { width: target.width, height: target.height };
+    return { width: target.displayWidth, height: target.displayHeight };
   },
   invertSize(target) {
     return { width: target.height, height: target.width };

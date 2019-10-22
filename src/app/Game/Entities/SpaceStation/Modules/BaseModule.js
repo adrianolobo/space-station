@@ -1,6 +1,7 @@
 import ModuleBuilder from './ModuleBuilder';
 import collisionCategories from '../../../Constants/collisionCategories';
 import depth from '../../../Constants/depth';
+import gameScale from '../../../Constants/gameScale';
 
 export default class BaseModule {
   constructor(scene) {
@@ -12,8 +13,10 @@ export default class BaseModule {
   _createBaseModule(spriteName) {
     this._baseModule = this.scene.matter.add
       .sprite(0, 0, spriteName);
+    this._baseModule.setScale(gameScale);
     this._connector = this.scene.matter.add
       .sprite(0, 0, 'connector-module');
+    this._connector.setScale(gameScale);
     ModuleBuilder.modulePositioning(
       this.baseModule,
       this.connector,

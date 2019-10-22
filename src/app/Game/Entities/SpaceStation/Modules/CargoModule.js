@@ -37,9 +37,9 @@ export default class SocialModule extends BaseModule {
   }
   _createLights() {
     const transformMatrix = this.baseModule.getWorldTransformMatrix();
-    const halfHeight = this.baseModule.height / 2;
+    const halfHeight = this.baseModule.displayHeight / 2;
     const lightsPositionMargin = 3;
-    const lightsSize = (this.baseModule.width * 1.5) / 10;
+    const lightsSize = (this.baseModule.displayWidth * 1.5) / 10;
 
     this.flames = this.scene.add.particles('flares');
     this.pathLights = [];

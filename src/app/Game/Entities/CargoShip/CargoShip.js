@@ -3,6 +3,7 @@ import collisionCategories from '../../Constants/collisionCategories';
 import depth from '../../Constants/depth';
 import EngineFlames from './EngineFlames';
 import ProximitySensor from './ProximitySensor';
+import gameScale from '../../Constants/gameScale';
 
 const CARGO_SHIP_STATES = {
   MOVING: 'moving',
@@ -23,12 +24,13 @@ export default class CargoShip {
 
     this.path = null;
     this.cargoShipImage = this.scene.add.image(0, 0, 'cargo-ship');
+    this.cargoShipImage.setScale(gameScale);
     this.addCargos();
     this.cargoShipContainer = this.scene.add.container(position.x, position.y, [
       this.cargoShipImage,
       ...this.cargos,
     ]);
-    this.velocity = 0.5;
+    this.velocity = 0.4;
     this.cargoShipContainer.setDepth(depth.CargoShip);
     this.cargoShipContainer.setSize(this.cargoShipImage.width, this.cargoShipImage.height);
     this.cargoShip = this.scene.matter.add.gameObject(this.cargoShipContainer);
@@ -51,26 +53,31 @@ export default class CargoShip {
     this.cargos = [];
     for (let i = 0; i < this.amountCargos; i += 1) {
       const cargoSprite = i % 2 ? 'cargo-red' : 'cargo-blue';
-      const cargo = this.scene.add.image(0, 0, cargoSprite).setOrigin(0, 0);
+      const cargo = this.scene.add.image(0, 0, cargoSprite).setOrigin(0, 0).setScale(gameScale);
       this.cargos.push(cargo);
     }
-    const originX = -(this.cargoShipImage.width / 2);
-    const originY = -(this.cargoShipImage.height / 2);
-    const startPadding = 10;
+    const shipSize = {
+      width: this.cargoShipImage.displayWidth,
+      height: this.cargoShipImage.displayHeight,
+    };
+    const originX = -(this.cargoShipImage.displayWidth / 2);
+    const originY = -(this.cargoShipImage.displayHeight / 2);
+    const startPadding = 5;
     const paddingCargoX = 1;
     const halfLength = this.cargos.length / 2;
     this.cargos.forEach((cargo, key) => {
       const isSecondHalf = key >= halfLength;
       const mutliplierX = isSecondHalf ? this.cargos.length - key - 1 : key;
-      const positionY = isSecondHalf ? (this.cargoShipImage.height / 2) - cargo.height : originY;
-      const positionX = originX + startPadding + ((paddingCargoX + cargo.width) * mutliplierX);
+      const positionY = isSecondHalf ? (shipSize.height / 2) - cargo.displayHeight : originY;
+      const cargoMutiPos = ((paddingCargoX + cargo.displayWidth) * mutliplierX);
+      const positionX = originX + startPadding + cargoMutiPos;
       cargo.setPosition(positionX, positionY);
     });
   }
   update() {
     this.graphics.clear();
     if (this.path) {
-      this.graphics.lineStyle(2, 0xffffff, 1);
+      this.graphics.lineStyle(1, 0xffffff, 0.4);
       this.path.draw(this.graphics);
     }
     this._move();

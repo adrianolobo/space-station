@@ -16,12 +16,12 @@ export default class CargoShipsManager {
     // this.newShip();
     // setInterval(this.newShip.bind(this), 5000);
     const newShip = new CargoShip(this.scene, {
-      x: 150,
-      y: 150,
+      x: 0,
+      y: 0,
     });
     const newShip2 = new CargoShip(this.scene, {
-      x: 150,
-      y: 250,
+      x: 300,
+      y: 0,
     });
     const gameConfig = this.scene.scene.systems.game.config;
     const originX = gameConfig.width / 2;

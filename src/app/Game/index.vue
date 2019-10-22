@@ -13,8 +13,6 @@ export default {
     const config = {
       parent: this.$refs.gameCanvasContainer,
       type: Phaser.AUTO,
-      width: document.body.clientWidth,
-      height: document.body.clientHeight,
       physics: {
         default: 'matter',
         matter: {
@@ -25,6 +23,13 @@ export default {
           debug: false,
         },
       },
+      scale: {
+        mode: Phaser.Scale.FIT,
+        width: 360,
+        height: 640,
+      },
+      pixelArt: false,
+      roundPixels: true,
       scene: [
         MainMenuScene,
         GameScene,

@@ -14,7 +14,7 @@ export default class EngineFlames {
       frame: 'yellow',
       lifespan: EMITTER_LIFESPAN,
       speed: { min: 0, max: 300 },
-      scale: { start: 0.12, end: 0 },
+      scale: { start: 0.06, end: 0 },
       blendMode: 'ADD',
     };
     this.emitters = [
