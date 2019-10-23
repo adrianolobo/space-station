@@ -16,11 +16,11 @@ const TIME_PER_CARGO = 1000;
 const TIME_INVINCIBILITY_AFTER_UNLOAD = 3000;
 
 export default class CargoShip {
-  constructor(scene, position) {
+  constructor(scene, position, amountCargos = 6) {
     this.scene = scene;
 
     this.state = CARGO_SHIP_STATES.MOVING;
-    this.amountCargos = 4;
+    this.amountCargos = amountCargos;
 
     this.path = null;
     this.cargoShipImage = this.scene.add.image(0, 0, 'cargo-ship');
@@ -30,7 +30,6 @@ export default class CargoShip {
       this.cargoShipImage,
       ...this.cargos,
     ]);
-    this.velocity = 0.4;
     this.cargoShipContainer.setDepth(depth.CargoShip);
     this.cargoShipContainer.setSize(this.cargoShipImage.width, this.cargoShipImage.height);
     this.cargoShip = this.scene.matter.add.gameObject(this.cargoShipContainer);
@@ -48,6 +47,10 @@ export default class CargoShip {
     this.graphics = this.scene.add.graphics();
     this.proximitySensor = new ProximitySensor(this.scene, this.cargoShip);
     this.engineFlames = new EngineFlames(this.scene, this.cargoShip, this.cargoShipImage);
+  }
+  get velocity() {
+    const velocities = [0.4, 0.35, 0.3, 0.25, 0.2, 0.15, 0.1];
+    return velocities[this.amountCargos] || 0.05;
   }
   addCargos() {
     this.cargos = [];
@@ -77,7 +80,7 @@ export default class CargoShip {
   update() {
     this.graphics.clear();
     if (this.path) {
-      this.graphics.lineStyle(1, 0xffffff, 0.4);
+      this.graphics.lineStyle(2, 0xffffff, 0.4);
       this.path.draw(this.graphics);
     }
     this._move();
@@ -197,6 +200,7 @@ export default class CargoShip {
       this.setUnloadedState();
       this.cargoModuleUnloading.setBusy(false);
       this.cargoModuleUnloading = null;
+      this.amountCargos = 0;
       this.goFoward();
       setTimeout(() => {
         this.setCollidesWithDefault();

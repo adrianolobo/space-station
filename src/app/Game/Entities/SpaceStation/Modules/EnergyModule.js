@@ -38,12 +38,12 @@ export default class EnergyModule extends BaseModule {
 
       this.solarPanel2.setPosition(
         this._baseModule.x + (baseModuleSize.height / 2) +
-                                              (this.solarPanel2.displayWidth / 2),
+                                              (this.solarPanel2.displayHeight / 2),
         this._baseModule.y,
       );
       this.solarPanel1.setPosition(
         this._baseModule.x - (baseModuleSize.height / 2) -
-                                              (this.solarPanel2.displayWidth / 2),
+                                              (this.solarPanel2.displayHeight / 2),
         this._baseModule.y,
       );
       return;
