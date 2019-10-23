@@ -29,7 +29,7 @@ export default {
         height: 640,
       },
       pixelArt: false,
-      roundPixels: true,
+      roundPixels: false,
       scene: [
         MainMenuScene,
         GameScene,
