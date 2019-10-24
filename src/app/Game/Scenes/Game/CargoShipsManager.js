@@ -1,3 +1,4 @@
+import Phaser from 'phaser';
 import CargoShip from '../../Entities/CargoShip/CargoShip';
 
 export default class CargoShipsManager {
@@ -13,39 +14,49 @@ export default class CargoShipsManager {
   }
   create() {
     this.manageInputs();
-    // this.newShip();
-    // setInterval(this.newShip.bind(this), 5000);
-    const newShip = new CargoShip(this.scene, {
-      x: 0,
-      y: 0,
-    }, 2);
-    const newShip2 = new CargoShip(this.scene, {
-      x: 300,
-      y: 0,
-    }, 6);
-    const gameConfig = this.scene.scene.systems.game.config;
-    const originX = gameConfig.width / 2;
-    const originY = gameConfig.height / 2;
-    newShip.turnTo({ x: originX, y: originY });
-    newShip.goFoward();
-    this.ships.push(newShip);
-    newShip2.turnTo({ x: originX, y: originY });
-    newShip2.goFoward();
-    this.ships.push(newShip2);
+    this.cargosPercentage = [
+      {
+        cargos: 2,
+        min: 0,
+        max: 50,
+      }, {
+        cargos: 4,
+        min: 51,
+        max: 80,
+      }, {
+        cargos: 6,
+        min: 81,
+        max: 100,
+      },
+    ];
+    this.newShip();
+    setInterval(this.newShip.bind(this), 5000);
   }
   newShip() {
-    const radius = 600;
-    const gameConfig = this.scene.scene.systems.game.config;
+    const gameConfig = this.scene.cameras.main;
     const originX = gameConfig.width / 2;
     const originY = gameConfig.height / 2;
-    const angle = Math.random() * Math.PI * 2;
+    const amountCargos = this.generateCargoAmount();
+    const startPosition = this.generateStartPosition();
     const newShip = new CargoShip(this.scene, {
-      x: (Math.cos(angle) * radius) + originX,
-      y: (Math.sin(angle) * radius) + originY,
-    });
+      x: startPosition.x,
+      y: startPosition.y,
+    }, amountCargos);
     this.ships.push(newShip);
     newShip.turnTo({ x: originX, y: originY });
     newShip.goFoward();
+  }
+  generateStartPosition() {
+    console.log(this);
+    // TODO: criar lógica de geração de positions
+    return { x: 100, y: 100 };
+  }
+  generateCargoAmount() {
+    const cargoChance = Phaser.Math.Between(0, 100);
+    const cargoSelected = this.cargosPercentage.find(cargoPercentage =>
+      cargoChance > cargoPercentage.min && cargoChance < cargoPercentage.max,
+    );
+    return (cargoSelected || { cargos: 4 }).cargos;
   }
   update() {
     this.ships.forEach((ship) => {
