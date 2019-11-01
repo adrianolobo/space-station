@@ -52,6 +52,24 @@ export default class CargoShip {
     const velocities = [0.4, 0.35, 0.3, 0.25, 0.2, 0.15, 0.1];
     return velocities[this.amountCargos] || 0.05;
   }
+  get position() {
+    return {
+      x: this.cargoShip.x,
+      y: this.cargoShip.y,
+    };
+  }
+  get isOutsideView() {
+    const camWidth = this.scene.cameras.main.width;
+    const camHeight = this.scene.cameras.main.height;
+    if (this.position.x > camWidth) return true;
+    if (this.position.x < 0) return true;
+    if (this.position.y > camHeight) return true;
+    if (this.position.y < 0) return true;
+    return false;
+  }
+  get isInView() {
+    return !this.isOutsideView;
+  }
   addCargos() {
     this.cargos = [];
     for (let i = 0; i < this.amountCargos; i += 1) {

@@ -1,10 +1,12 @@
 import Phaser from 'phaser';
 import CargoShip from '../../Entities/CargoShip/CargoShip';
+import OutsideArrow from '../../Entities/OutsideArrow';
 
 export default class CargoShipsManager {
   constructor(scene, spawnTime = { min: 4000, max: 7000 }) {
     this.scene = scene;
     this.ships = [];
+    this.outsideArrows = new WeakMap();
     this.activeShip = null;
     this.spawnTime = spawnTime;
     const sides = ['top', 'right', 'down', 'left'];
@@ -63,7 +65,7 @@ export default class CargoShipsManager {
     this.spawnSequence.push(currentPosition);
     const sceneWidth = this.scene.cameras.main.width;
     const sceneHeight = this.scene.cameras.main.height;
-    const spawnMargin = 20;
+    const spawnMargin = 40;
     const rnd = Phaser.Math.Between;
     if (currentPosition === 'top') return { x: rnd(0, sceneWidth), y: -spawnMargin };
     if (currentPosition === 'right') return { x: sceneWidth + spawnMargin, y: rnd(0, sceneHeight) };
@@ -82,7 +84,23 @@ export default class CargoShipsManager {
   update() {
     this.ships.forEach((ship) => {
       ship.update();
+      this.manageOutside(ship);
     });
+  }
+  manageOutside(ship) {
+    if (!this.outsideArrows.has(ship) && ship.isOutsideView) {
+      const newOutsideArrow = new OutsideArrow(this.scene, ship);
+      this.outsideArrows.set(ship, newOutsideArrow);
+      return;
+    }
+    if (!this.outsideArrows.has(ship)) return;
+    const outsideArrow = this.outsideArrows.get(ship);
+    if (ship.isInView) {
+      this.outsideArrows.delete(ship);
+      outsideArrow.destroy();
+      return;
+    }
+    outsideArrow.setPosition();
   }
   manageInputs() {
     this.scene.input.on('pointerdown', (pointer, gameObjects) => {
