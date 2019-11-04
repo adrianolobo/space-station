@@ -1,6 +1,7 @@
-import Phaser from 'phaser/dist/phaser.min';
+import Phaser from 'phaser';
+import BaseScene from '../BaseScene';
 
-export default class MainMenu extends Phaser.Scene {
+export default class MainMenu extends BaseScene {
   constructor() {
     super({ key: 'MainMenu' });
   }

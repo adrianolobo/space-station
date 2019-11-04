@@ -7,6 +7,7 @@
 import Phaser from 'phaser/dist/phaser.min';
 import GameScene from './Scenes/Game/GameScene';
 import MainMenuScene from './Scenes/MainMenu/MainMenuScene';
+import AppController from './Scenes/AppController';
 
 export default {
   mounted() {
@@ -31,6 +32,7 @@ export default {
       pixelArt: false,
       roundPixels: false,
       scene: [
+        AppController,
         MainMenuScene,
         GameScene,
       ],

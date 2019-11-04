@@ -1,12 +1,12 @@
-import Phaser from 'phaser/dist/phaser.min';
+import BaseScene from '../BaseScene';
 import CargoShipsManager from './CargoShipsManager';
 import SpaceStationManager from './SpaceStationManager';
 import CollisionManager from './CollisionManager';
 import OutsideArrow from '../../Entities/OutsideArrow';
 
-export default class GameScene extends Phaser.Scene {
+export default class GameScene extends BaseScene {
   constructor() {
-    super({ key: 'GameScene' });
+    super('GameScene');
   }
   preload() {
     // COLOCAR EM UM LOADER
@@ -21,6 +21,7 @@ export default class GameScene extends Phaser.Scene {
     OutsideArrow.preload(this);
   }
   create() {
+    super.create();
     this.CargoShipsManager.create();
     this.SpaceStationManager.create();
     this.CollisionManager.create();
