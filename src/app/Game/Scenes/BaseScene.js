@@ -1,15 +1,23 @@
-import Phaser from 'phaser/dist/phaser.min';
+import Phaser from '@/phaser';
 
 export default class BaseScene extends Phaser.Scene {
   create() {
     this.appScene = this.scene.get('AppController');
   }
   get width() {
-    if (!((this.cameras || {}).main || {}).width) return null;
+    if (!(this.cameras || {}).main) return null;
     return this.cameras.main.width;
   }
+  get halfWidth() {
+    if (this.width === null) return null;
+    return (this.width / 2);
+  }
   get height() {
-    if (!((this.cameras || {}).main || {}).height) return null;
+    if (!(this.cameras || {}).main || {}) return null;
     return this.cameras.main.height;
+  }
+  get halfHeight() {
+    if (this.height === null) return null;
+    return (this.height / 2);
   }
 }
