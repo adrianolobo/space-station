@@ -1,8 +1,8 @@
-import BaseScene from "./BaseScene";
+import BaseScene from './BaseScene';
 
 export default class AppController extends BaseScene {
   constructor() {
-    super('AppController');
+    super({ key: 'AppController' });
   }
   goToMainMenu() {
     this.scene.launch('MainMenu');

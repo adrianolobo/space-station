@@ -6,7 +6,7 @@ import OutsideArrow from '../../Entities/OutsideArrow';
 
 export default class GameScene extends BaseScene {
   constructor() {
-    super('GameScene');
+    super({ key: 'GameScene' });
   }
   preload() {
     // COLOCAR EM UM LOADER
