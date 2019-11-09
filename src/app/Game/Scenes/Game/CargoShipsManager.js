@@ -3,7 +3,7 @@ import CargoShip from '../../Entities/CargoShip/CargoShip';
 import OutsideArrow from '../../Entities/OutsideArrow';
 
 export default class CargoShipsManager {
-  constructor(scene, spawnTime = { min: 4000, max: 7000 }) {
+  constructor(scene, spawnTime = { min: 10000, max: 20000 }) {
     this.scene = scene;
     this.ships = [];
     this.outsideArrows = new WeakMap();
@@ -41,10 +41,13 @@ export default class CargoShipsManager {
   spawnShips() {
     if (!this.isCreatingShips) return;
     const timeout = Phaser.Math.Between(this.spawnTime.min, this.spawnTime.max);
-    setTimeout(() => {
-      this.newShip();
-      this.spawnShips();
-    }, timeout);
+    this.scene.time.addEvent({
+      delay: timeout,
+      callback: () => {
+        this.newShip();
+        this.spawnShips();
+      },
+    });
   }
   newShip() {
     const gameConfig = this.scene.cameras.main;
@@ -88,20 +91,36 @@ export default class CargoShipsManager {
     });
   }
   manageOutside(ship) {
+    if (ship.isAllOutsideView && ship.isUnloaded) {
+      this.destroyShip(ship);
+    }
     if (!this.outsideArrows.has(ship) && ship.isOutsideView) {
       const newOutsideArrow = new OutsideArrow(this.scene, ship);
       this.outsideArrows.set(ship, newOutsideArrow);
       return;
     }
     if (!this.outsideArrows.has(ship)) return;
-    const outsideArrow = this.outsideArrows.get(ship);
     if (ship.isInView) {
-      this.outsideArrows.delete(ship);
-      outsideArrow.destroy();
+      this.destroyOutsideArrow(ship);
       return;
     }
+    const outsideArrow = this.outsideArrows.get(ship);
     outsideArrow.setPosition();
   }
+
+  destroyShip(ship) {
+    this.destroyOutsideArrow(ship);
+    const shipIndex = this.ships.findIndex(shipItem => shipItem === ship);
+    this.ships.splice(shipIndex, 1);
+    ship.destroy();
+  }
+
+  destroyOutsideArrow(ship) {
+    const outsideArrow = this.outsideArrows.get(ship);
+    this.outsideArrows.delete(ship);
+    outsideArrow.destroy();
+  }
+
   manageInputs() {
     this.scene.input.on('pointerdown', (pointer, gameObjects) => {
       if ((gameObjects[0] || {}).name === 'CargoShip') {

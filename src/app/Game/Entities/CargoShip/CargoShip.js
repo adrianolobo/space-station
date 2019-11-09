@@ -58,14 +58,22 @@ export default class CargoShip {
       y: this.cargoShip.y,
     };
   }
-  get isOutsideView() {
+  checkOutside(safeArea = 0) {
     const camWidth = this.scene.cameras.main.width;
     const camHeight = this.scene.cameras.main.height;
-    if (this.position.x > camWidth) return true;
-    if (this.position.x < 0) return true;
-    if (this.position.y > camHeight) return true;
-    if (this.position.y < 0) return true;
+    if (this.position.x > camWidth + safeArea) return true;
+    if (this.position.x < -safeArea) return true;
+    if (this.position.y > camHeight - safeArea) return true;
+    if (this.position.y < safeArea) return true;
     return false;
+  }
+  get isOutsideView() {
+    return this.checkOutside();
+  }
+  get isAllOutsideView() {
+    const shipImage = this.cargoShipImage;
+    const shipLargerMetric = Math.max(shipImage.displayWidth, shipImage.displayHeight);
+    return this.checkOutside(shipLargerMetric);
   }
   get isInView() {
     return !this.isOutsideView;
@@ -234,6 +242,15 @@ export default class CargoShip {
       }
     }, TIME_PER_CARGO);
   }
+  destroy() {
+    this.cargoShipContainer.destroy();
+    this.cargoShipImage.destroy();
+    this.cargoShip.destroy();
+    this.cargos.forEach(cargo => cargo.destroy());
+    this.graphics.destroy();
+    this.proximitySensor.destroy();
+    this.engineFlames.destroy();
+  }
   setUnloadedState() {
     this.setState(CARGO_SHIP_STATES.UNLOADED);
   }
@@ -243,7 +260,12 @@ export default class CargoShip {
   canUserControl() {
     return this.state === CARGO_SHIP_STATES.MOVING || this.state === CARGO_SHIP_STATES.UNLOADED;
   }
-  collided() {
+  get isUnloaded() {
+    return this.state === CARGO_SHIP_STATES.UNLOADED;
+  }
+  collided(bodyCollided) {
+    if (bodyCollided.isSensor) return false;
+    if (this.state === CARGO_SHIP_STATES.MOVING || this.state === CARGO_SHIP_STATES.UNLOADED) alert('GAME OVER');
     return this;
   }
 }

@@ -63,4 +63,8 @@ export default class ProximitySensor {
   getSensor() {
     return this.sensor;
   }
+  destroy() {
+    this.emitter.destroy();
+    this.particles.destroy();
+  }
 }

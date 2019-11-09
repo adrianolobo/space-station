@@ -22,6 +22,10 @@ export default class EngineFlames {
       this.flames.createEmitter(emitterConfig),
     ];
   }
+  destroy() {
+    this.emitters.forEach(emitter => emitter.destroy());
+    this.flames.destroy();
+  }
   handleEmitter(emitterStopped) {
     if (emitterStopped) {
       this.emitters.forEach((e) => { e.lifespan.propertyValue = 0; });
