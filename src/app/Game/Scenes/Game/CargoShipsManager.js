@@ -36,7 +36,7 @@ export default class CargoShipsManager {
       },
     ];
     this.newShip();
-    this.spawnShips();
+    // this.spawnShips();
   }
   spawnShips() {
     if (!this.isCreatingShips) return;
@@ -93,6 +93,11 @@ export default class CargoShipsManager {
   manageOutside(ship) {
     if (ship.isAllOutsideView && ship.isUnloaded) {
       this.destroyShip(ship);
+      return;
+    }
+    if (ship.isAllOutsideView && !ship.isUnloaded && ship.wasInView) {
+      this.scene.gameOver();
+      return;
     }
     if (!this.outsideArrows.has(ship) && ship.isOutsideView) {
       const newOutsideArrow = new OutsideArrow(this.scene, ship);
@@ -118,6 +123,7 @@ export default class CargoShipsManager {
   destroyOutsideArrow(ship) {
     const outsideArrow = this.outsideArrows.get(ship);
     this.outsideArrows.delete(ship);
+    if (!outsideArrow) return;
     outsideArrow.destroy();
   }
 

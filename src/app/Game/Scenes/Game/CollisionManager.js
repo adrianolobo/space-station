@@ -25,6 +25,8 @@ export default class CollisionManager {
     });
     this.scene.matter.world.on('collisionend', (event) => {
       event.pairs.forEach((pair) => {
+        if (!pair.bodyA.gameObject || !pair.bodyB.gameObject) return;
+        if (!pair.bodyA.gameObject.__self || !pair.bodyB.gameObject.__self) return;
         if (pair.bodyA.gameObject.__self.collideEnd) {
           pair.bodyA.gameObject.__self.collideEnd(pair.bodyB, pair.bodyA);
         }

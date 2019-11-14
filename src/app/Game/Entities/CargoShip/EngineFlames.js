@@ -23,8 +23,8 @@ export default class EngineFlames {
     ];
   }
   destroy() {
-    this.emitters.forEach(emitter => emitter.destroy());
     this.flames.destroy();
+    this.emitters.forEach(emitter => emitter.stop());
   }
   handleEmitter(emitterStopped) {
     if (emitterStopped) {

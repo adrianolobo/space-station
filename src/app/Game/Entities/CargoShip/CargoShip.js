@@ -20,6 +20,7 @@ export default class CargoShip {
     this.scene = scene;
 
     this.state = CARGO_SHIP_STATES.MOVING;
+    this.wasInView = false;
     this.amountCargos = amountCargos;
 
     this.path = null;
@@ -63,12 +64,18 @@ export default class CargoShip {
     const camHeight = this.scene.cameras.main.height;
     if (this.position.x > camWidth + safeArea) return true;
     if (this.position.x < -safeArea) return true;
-    if (this.position.y > camHeight - safeArea) return true;
-    if (this.position.y < safeArea) return true;
+    if (this.position.y > camHeight + safeArea) return true;
+    if (this.position.y < -safeArea) return true;
     return false;
   }
   get isOutsideView() {
     return this.checkOutside();
+  }
+  manageWasInView() {
+    if (this.wasInView) return;
+    if (!this.checkOutside()) {
+      this.wasInView = true;
+    }
   }
   get isAllOutsideView() {
     const shipImage = this.cargoShipImage;
@@ -111,6 +118,7 @@ export default class CargoShip {
     }
     this._move();
     this.engineFlames.handleEmitter(this.state === CARGO_SHIP_STATES.UNLOADING);
+    this.manageWasInView();
     this.proximitySensor.update();
   }
   _move() {
@@ -161,7 +169,7 @@ export default class CargoShip {
       lastLine.x, lastLine.y,
       position.x, position.y,
     );
-    const MAX_DISTANCE = 10;
+    const MAX_DISTANCE = 4;
     if (distance > MAX_DISTANCE) {
       const amount = Math.floor(distance / MAX_DISTANCE);
       for (let i = 1; i <= amount; i += 1) {
@@ -265,7 +273,10 @@ export default class CargoShip {
   }
   collided(bodyCollided) {
     if (bodyCollided.isSensor) return false;
-    if (this.state === CARGO_SHIP_STATES.MOVING || this.state === CARGO_SHIP_STATES.UNLOADED) alert('GAME OVER');
+    if (this.state === CARGO_SHIP_STATES.MOVING || this.state === CARGO_SHIP_STATES.UNLOADED) {
+      this.scene.gameOver();
+      console.log('GAME OVER');
+    }
     return this;
   }
 }

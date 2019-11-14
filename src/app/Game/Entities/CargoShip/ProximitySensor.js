@@ -64,7 +64,9 @@ export default class ProximitySensor {
     return this.sensor;
   }
   destroy() {
-    this.emitter.destroy();
+    this.sensor.isSensor = false;
+    this.sensor.isSleeping = true;
     this.particles.destroy();
+    this.emitter.stop();
   }
 }
